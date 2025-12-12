@@ -14,38 +14,46 @@
 
 \section{Inleiding}%
 \label{sec:inleiding}
-
-Waarover zal je bachelorproef gaan? Introduceer het thema en zorg dat volgende zaken zeker duidelijk aanwezig zijn:
-
-\begin{itemize}
-  \item kaderen thema
-  \item de doelgroep
-  \item de probleemstelling en (centrale) onderzoeksvraag
-  \item de onderzoeksdoelstelling
-\end{itemize}
-
-Denk er aan: een typische bachelorproef is \textit{toegepast onderzoek}, wat betekent dat je start vanuit een concrete probleemsituatie in bedrijfscontext, een \textbf{casus}. Het is belangrijk om je onderwerp goed af te bakenen: je gaat voor die \textit{ene specifieke probleemsituatie} op zoek naar een goede oplossing, op basis van de huidige kennis in het vakgebied.
-
-De doelgroep moet ook concreet en duidelijk zijn, dus geen algemene of vaag gedefinieerde groepen zoals \emph{bedrijven}, \emph{developers}, \emph{Vlamingen}, enz. Je richt je in elk geval op it-professionals, een bachelorproef is geen populariserende tekst. Eén specifiek bedrijf (die te maken hebben met een concrete probleemsituatie) is dus beter dan \emph{bedrijven} in het algemeen.
-
-Formuleer duidelijk de onderzoeksvraag! De begeleiders lezen nog steeds te veel voorstellen waarin we geen onderzoeksvraag terugvinden.
-
-Schrijf ook iets over de doelstelling. Wat zie je als het concrete eindresultaat van je onderzoek, naast de uitgeschreven scriptie? Is het een proof-of-concept, een rapport met aanbevelingen, \ldots Met welk eindresultaat kan je je bachelorproef als een succes beschouwen?
+Het gebruik van LLM’s binnen softwareontwikkeling wordt steeds vaker toegepast, onder meer binnen het paradigma van vibe coding , waarbij ontwikkelaars via promts code laten genereren zonder  zelf veel denkwerk te verrichten  \cite{google2025vibecoding}. In bedrijfscontext met complexe API’s blijft het correct toepassen van deze aanpak een uitdaging. Dit onderzoek vertrekt vanuit een concrete casus binnen een game server managementplatform nl. Takaro.io. Het creeëren van modules vereist momenteel diepgaande kennis zowel van de api als van coderen zelf, wat het gebruik van de vibe coding aanpak bemoeilijkt. Hoewel LLM’s sterk geevolueerd zijn de laatste paar jaren op vlak van coderen missen ze de kennis van de onderliggende structuur van de omgeving. 
+De doelgroep van dit onderzoek bestaat uit IT-professionals die betrokken zijn bij de ontwikkeling en het onderhoud van dit platform. De centrale onderzoeksvraag luidt:
+\textit{Hoe kan een MCP-ondersteunde coding agent worden ontworpen en geëvalueerd die, binnen een vibe coding-context, correcte en herbruikbare codefragmenten genereert voor game server management via een complexe API?}  
+De doelstelling van dit onderzoek is het ontwikkelen van een proof of concept van een MCP-ondersteunde coding agent die deze problematiek adresseert. Het onderzoek wordt als succesvol beschouwd wanneer het proof of concept aantoont dat MCP de correctheid en herbruikbaarheid van door vibe coding gegenereerde code verhoogt, aangevuld met concrete aanbevelingen voor verdere toepassing binnen de casusomgeving.
 
 %---------- Stand van zaken ---------------------------------------------------
 
-\section{Literatuurstudie}%
+\subsection{Onderzoeksvragen}
+
+\textbf{Hoofdonderzoeksvraag}
+\begin{itemize}
+  \item Hoe kan een MCP-ondersteunde coding agent worden ontworpen en geëvalueerd die, binnen een vibe coding-context, correcte en herbruikbare codefragmenten genereert voor game server management via een complexe API?
+\end{itemize}
+
+\textbf{Deelvragen -- Probleemdomein}
+\begin{itemize}
+  \item Welke fouten treden op bij het genereren van code voor een complexe game server management API zonder structurele ondersteuning?
+  \item Hoe kan de correctheid en kwaliteit van door een LLM gegenereerde codefragmenten objectief worden geëvalueerd binnen een proof of concept?
+  \item Welke technische en methodologische beperkingen zijn van invloed op het gebruik van MCP en LLM-gebaseerde codegeneratie binnen dit onderzoek?
+\end{itemize}
+
+\textbf{Deelvragen -- Oplossingsdomein}
+\begin{itemize}
+  \item Hoe kan een MCP-server worden ontworpen om een complexe game server management API op een gestructureerde en bruikbare manier beschikbaar te maken voor codegeneratie?
+  \item Hoe kan een coding agent MCP-tools gebruiken om gebruikersvragen te vertalen naar correcte en samenhangende codefragmenten?
+  \item In welke mate draagt MCP bij aan de correctheid en herbruikbaarheid van de gegenereerde code in vergelijking met documentatie-gebaseerde codegeneratie?
+\end{itemize}
+
+\section{Literatuurstudie}
 \label{sec:literatuurstudie}
 
-Hier beschrijf je de \emph{state-of-the-art} rondom je gekozen onderzoeksdomein, d.w.z.\ een inleidende, doorlopende tekst over het onderzoeksdomein van je bachelorproef. Je steunt daarbij heel sterk op de professionele \emph{vakliteratuur}, en niet zozeer op populariserende teksten voor een breed publiek. Wat is de huidige stand van zaken in dit domein, en wat zijn nog eventuele open vragen (die misschien de aanleiding waren tot je onderzoeksvraag!)?
+De Model Context Protocol (MCP) werd geïntroduceerd als een open standaard om Large Language Models (LLM’s) op een gestructureerde en veilige manier te laten interageren met externe tools en API’s. In tegenstelling tot traditionele function calling of contextgebaseerde benaderingen zoals Retrieval-Augmented Generation (RAG), voorziet MCP in dynamische capability discovery, gestandaardiseerde toolinterfaces en stateful interacties. Hierdoor positioneert MCP zich als een veelbelovende infrastructuur voor agent-gebaseerde LLM-toepassingen en complexe workflow-ondersteuning \cite{ray2025mcp_survey}.
 
-Je mag de titel van deze sectie ook aanpassen (literatuurstudie, stand van zaken, enz.). Zijn er al gelijkaardige onderzoeken gevoerd? Wat concluderen ze? Wat is het verschil met jouw onderzoek?
+Recente studies tonen echter aan dat het gebruik van MCP niet automatisch leidt tot betere prestaties. Vergelijkend experimenteel onderzoek naar verschillende MCP-servers wijst uit dat tokengebruik en latentie sterk kunnen variëren, en dat MCP in bepaalde scenario’s geen significante verbetering in correctheid oplevert ten opzichte van klassieke function calling. De effectiviteit van MCP blijkt sterk afhankelijk te zijn van de mate waarin API-capabilities op een geschikte manier worden geabstraheerd en aangeboden aan het LLM \cite{mcp_eval_function_calling}.
 
-Verwijs bij elke introductie van een term of bewering over het domein naar de vakliteratuur, bijvoorbeeld~\autocite{Hykes2013}! Denk zeker goed na welke werken je refereert en waarom.
+Daarnaast wijst empirisch onderzoek op belangrijke risico’s op het vlak van beveiliging en onderhoudbaarheid van MCP-servers. Een grootschalige analyse van open-source MCP-implementaties identificeert zowel traditionele kwetsbaarheden, zoals onveilige credentialverwerking, als MCP-specifieke problemen zoals tool poisoning en onvoldoende afgebakende permissies. Ook werden frequente code smells en onderhoudsproblemen vastgesteld, wat de betrouwbaarheid van MCP-gebaseerde systemen op lange termijn kan beïnvloeden \cite{mcp_security_analysis}.
 
-Draag zorg voor correcte literatuurverwijzingen! Een bronvermelding hoort thuis \emph{binnen} de zin waar je je op die bron baseert, dus niet er buiten! Maak meteen een verwijzing als je gebruik maakt van een bron. Doe dit dus \emph{niet} aan het einde van een lange paragraaf. Baseer nooit teveel aansluitende tekst op eenzelfde bron.
+De bestaande literatuur focust voornamelijk op MCP als mechanisme voor tool-invocation, contextinjectie en workflow-orchestratie. Er is echter een gebrek aan onderzoek dat MCP benadert als ondersteunende laag voor een \textit{coding agent} die, binnen een vibe coding-context, correcte en herbruikbare codefragmenten genereert door meerdere API-operaties te combineren. Eveneens onderbelicht blijft de afweging tussen token-efficiëntie, correctheid van gegenereerde code en herbruikbaarheid binnen een modulair platform.
 
-Als je informatie over bronnen verzamelt in JabRef, zorg er dan voor dat alle nodige info aanwezig is om de bron terug te vinden (zoals uitvoerig besproken in de lessen Research Methods).
+Deze vastgestelde onderzoekslacune vormt de basis voor deze bachelorproef. Het onderzoek evalueert MCP niet als einddoel, maar als een structurele ondersteuningslaag voor codegeneratie met LLM’s. Door middel van een proof of concept wordt onderzocht in welke mate MCP kan bijdragen aan het genereren van correctere en herbruikbare codefragmenten voor een game server managementplatform.
 
 % Voor literatuurverwijzingen zijn er twee belangrijke commando's:
 % \autocite{KEY} => (Auteur, jaartal) Gebruik dit als de naam van de auteur
@@ -57,28 +65,78 @@ Als je informatie over bronnen verzamelt in JabRef, zorg er dan voor dat alle no
 Je mag deze sectie nog verder onderverdelen in subsecties als dit de structuur van de tekst kan verduidelijken.
 
 %---------- Methodologie ------------------------------------------------------
-\section{Methodologie}%
+\section{Methodologie}
 \label{sec:methodologie}
 
-Hier beschrijf je hoe je van plan bent het onderzoek te voeren. Welke onderzoekstechniek ga je toepassen om elk van je onderzoeksvragen te beantwoorden? Gebruik je hiervoor literatuurstudie, interviews met belanghebbenden (bv.~voor requirements-analyse), experimenten, simulaties, vergelijkende studie, risico-analyse, PoC, \ldots?
+Deze bachelorproef betreft een vorm van \textit{toegepast onderzoek} en vertrekt vanuit een concrete probleemsituatie binnen een game server managementplatform dat gebruikmaakt van een complexe API. Het onderzoek combineert een literatuurstudie met ontwerpgericht onderzoek en experimentele evaluatie, resulterend in een technisch proof of concept (PoC). De gekozen methodologie is erop gericht om objectieve en meetbare resultaten te bekomen en sluit aan bij de aard van een bachelorproef toegepaste informatica.
 
-Valt je onderwerp onder één van de typische soorten bachelorproeven die besproken zijn in de lessen Research Methods (bv.\ vergelijkende studie of risico-analyse)? Zorg er dan ook voor dat we duidelijk de verschillende stappen terug vinden die we verwachten in dit soort onderzoek!
+\subsection{Onderzoeksopzet}
 
-Vermijd onderzoekstechnieken die geen objectieve, meetbare resultaten kunnen opleveren. Enquêtes, bijvoorbeeld, zijn voor een bachelorproef informatica meestal \textbf{niet geschikt}. De antwoorden zijn eerder meningen dan feiten en in de praktijk blijkt het ook bijzonder moeilijk om voldoende respondenten te vinden. Studenten die een enquête willen voeren, hebben meestal ook geen goede definitie van de populatie, waardoor ook niet kan aangetoond worden dat eventuele resultaten representatief zijn.
+Het onderzoek wordt uitgevoerd in vier opeenvolgende fasen. Elke fase draagt bij tot het beantwoorden van één of meerdere onderzoeksvragen en levert concrete artefacten op.
 
-Uit dit onderdeel moet duidelijk naar voor komen dat je bachelorproef ook technisch voldoen\-de diepgang zal bevatten. Het zou niet kloppen als een bachelorproef informatica ook door bv.\ een student marketing zou kunnen uitgevoerd worden.
+\subsection{Fase 1: Literatuurstudie en probleemverkenning}
 
-Je beschrijft ook al welke tools (hardware, software, diensten, \ldots) je denkt hiervoor te gebruiken of te ontwikkelen.
+In de eerste fase wordt een gerichte literatuurstudie uitgevoerd rond Large Language Models, codegeneratie, vibe coding en het Model Context Protocol (MCP). Hierbij wordt gefocust op bestaande architecturen, beperkingen en risico’s van MCP-servers, evenals op de huidige stand van zaken rond LLM-gebaseerde codegeneratie voor complexe API’s. Deze fase dient om het probleemdomein af te bakenen en bestaande oplossingen en onderzoekslacunes te identificeren.
 
-Probeer ook een tijdschatting te maken. Hoe lang zal je met elke fase van je onderzoek bezig zijn en wat zijn de concrete \emph{deliverables} in elke fase?
+\textbf{Onderzoekstechniek:} literatuurstudie  
+\textbf{Deliverables:} literatuuroverzicht en afgebakende probleemstelling
+
+\subsection{Fase 2: Analyse van de casus en requirements}
+
+Vervolgens wordt de concrete casus geanalyseerd, met name het gebruik van de Takaro game server management API binnen het platform. De API-structuur, typische gebruiksscenario’s en veelvoorkomende beheertaken worden in kaart gebracht. Op basis hiervan worden functionele en niet-functionele vereisten opgesteld voor de MCP-server en de coding agent. Deze analyse gebeurt op basis van technische documentatie en praktijkgerichte use-cases, niet via subjectieve bevragingen.
+
+\textbf{Onderzoekstechniek:} casusanalyse en technische requirements-analyse  
+\textbf{Deliverables:} overzicht van API-capabilities, use-cases en requirementsdocument
+
+\subsection{Fase 3: Ontwerp en implementatie van het proof of concept}
+
+In deze fase wordt een MCP-server ontworpen die relevante API-functionaliteit op een gestructureerde manier aanbiedt aan een LLM. Hierbij wordt bewust gekozen voor abstraherende MCP-tools die meerdere API-operaties kunnen combineren. Vervolgens wordt een coding agent ontwikkeld die gebruikersvragen in natuurlijke taal vertaalt naar codefragmenten met behulp van deze MCP-tools.
+
+Het proof of concept focust op codegeneratie en bevat geen autonome uitvoering van beheertaken. De gebruiker blijft steeds verantwoordelijk voor validatie en het eventueel toevoegen van gegenereerde code als herbruikbare module binnen het platform.
+
+\textbf{Onderzoekstechniek:} ontwerpgericht onderzoek en proof of concept  
+\textbf{Deliverables:} MCP-server, coding agent en technische documentatie
+
+\subsection{Fase 4: Evaluatie en vergelijking}
+
+Tot slot wordt het proof of concept geëvalueerd aan de hand van een beperkte set vooraf gedefinieerde gebruikersvragen. De gegenereerde codefragmenten worden beoordeeld op basis van objectieve criteria zoals syntactische correctheid, correcte API-aanwending en herbruikbaarheid. Daarnaast wordt een vergelijking gemaakt tussen codegeneratie met en zonder MCP-ondersteuning, om de toegevoegde waarde van MCP te evalueren.
+
+\textbf{Onderzoekstechniek:} experimentele evaluatie en vergelijkende studie  
+\textbf{Deliverables:} evaluatieresultaten, analyse en conclusies
+
+\subsection{Gebruikte tools en technologieën}
+
+Voor de uitvoering van dit onderzoek worden onder andere de volgende tools en technologieën gebruikt:
+\begin{itemize}
+  \item Een Large Language Model (lokaal of via API)
+  \item Een zelf ontwikkelde MCP-server
+  \item Programmeertalen en frameworks geschikt voor API-integratie (bv. Python, FastAPI)
+  \item De Takaro game server management API
+  \item Versiebeheer en ontwikkeltools (Git, IDE)
+\end{itemize}
+
+\subsection{Planning en tijdsinschatting}
+
+De uitvoering van de bachelorproef wordt gepland over een periode van één semester:
+\begin{itemize}
+  \item Fase 1: Literatuurstudie en probleemverkenning (2 weken)
+  \item Fase 2: Casusanalyse en requirements (2 weken)
+  \item Fase 3: Ontwerp en implementatie PoC (6 weken)
+  \item Fase 4: Evaluatie en rapportering (2 weken)
+\end{itemize}
+
+Het onderzoek wordt als succesvol beschouwd wanneer het proof of concept aantoont dat MCP bijdraagt aan het genereren van correctere en herbruikbare codefragmenten en wanneer de resultaten leiden tot concrete, technisch onderbouwde conclusies.
 
 %---------- Verwachte resultaten ----------------------------------------------
-\section{Verwacht resultaat, conclusie}%
+\section{Verwacht resultaat en conclusie}
 \label{sec:verwachte_resultaten}
 
-Hier beschrijf je welke resultaten je verwacht. Als je metingen en simulaties uitvoert, kan je hier al mock-ups maken van de grafieken samen met de verwachte conclusies. Benoem zeker al je assen en de onderdelen van de grafiek die je gaat gebruiken. Dit zorgt ervoor dat je concreet weet welk soort data je moet verzamelen en hoe je die moet meten.
+Deze bachelorproef heeft als doel het ontwikkelen en evalueren van een proof of concept van een MCP-ondersteunde coding agent voor game server management. Op basis van de literatuurstudie en de gekozen onderzoeksopzet wordt verwacht dat het gebruik van MCP als structurele ondersteuningslaag bijdraagt aan een verhoogde correctheid en herbruikbaarheid van door een LLM gegenereerde codefragmenten.
 
-Wat heeft de doelgroep van je onderzoek aan het resultaat? Op welke manier zorgt jouw bachelorproef voor een meerwaarde?
+Concreet wordt verwacht dat codefragmenten die gegenereerd worden met MCP-ondersteuning minder fouten bevatten met betrekking tot API-aanwending, zoals het gebruik van incorrecte endpoints, ontbrekende parameters of een foutieve volgorde van API-operaties. Daarnaast wordt verwacht dat deze codefragmenten consistenter zijn opgebouwd en daardoor beter geschikt zijn om te worden opgeslagen en hergebruikt als modules binnen het platform. Daartegenover staat de hypothese dat het gebruik van MCP kan leiden tot een verhoogd tokengebruik en een hogere complexiteit in de initiële setup.
 
-Hier beschrijf je wat je verwacht uit je onderzoek, met de motivatie waarom. Het is \textbf{niet} erg indien uit je onderzoek andere resultaten en conclusies vloeien dan dat je hier beschrijft: het is dan juist interessant om te onderzoeken waarom jouw hypothesen niet overeenkomen met de resultaten.
+Voor de evaluatie worden verschillende metingen uitgevoerd, waarvan de resultaten visueel kunnen worden voorgesteld. Een eerste grafiek vergelijkt het percentage correct gegenereerde codefragmenten met en zonder MCP-ondersteuning. De x-as stelt hierbij de gebruikte methode voor (zonder MCP versus met MCP), terwijl de y-as het percentage correctheid weergeeft op basis van vooraf gedefinieerde evaluatiecriteria. Een tweede grafiek kan het gemiddeld tokengebruik per gegenereerd codefragment tonen, waarbij de x-as opnieuw de gebruikte methode weergeeft en de y-as het gemiddeld aantal tokens.
 
+Op basis van deze metingen wordt verwacht te kunnen concluderen dat MCP een duidelijke meerwaarde biedt voor codegeneratie in een vibe coding-context, ondanks een mogelijke toename in tokengebruik. Indien deze hypothese niet bevestigd wordt, biedt dit waardevolle inzichten in de beperkingen van MCP en de omstandigheden waarin het protocol minder geschikt is voor codegeneratie.
+
+De doelgroep van dit onderzoek, met name IT-professionals die instaan voor de ontwikkeling en het onderhoud van het game server managementplatform, verkrijgt inzicht in hoe LLM’s op een gecontroleerde en herbruikbare manier kunnen worden ingezet voor codegeneratie. De proof of concept en de bijhorende conclusies bieden een concrete basis voor verdere uitbreiding van het platform met AI-ondersteunde ontwikkeltools. De bachelorproef levert hierdoor zowel een technisch artefact als onderbouwde aanbevelingen op, wat zorgt voor een duidelijke meerwaarde binnen de specifieke bedrijfscontext.
