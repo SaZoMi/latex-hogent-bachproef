@@ -14,10 +14,10 @@
 
 \section{Inleiding}%
 \label{sec:inleiding}
-Het gebruik van LLM’s binnen softwareontwikkeling wordt steeds vaker toegepast, onder meer binnen het paradigma van vibe coding , waarbij ontwikkelaars via promts code laten genereren zonder  zelf veel denkwerk te verrichten  \cite{google2025vibecoding}. In bedrijfscontext met complexe API’s blijft het correct toepassen van deze aanpak een uitdaging. Dit onderzoek vertrekt vanuit een concrete casus binnen een game server managementplatform nl. Takaro.io. Het creeëren van modules vereist momenteel diepgaande kennis zowel van de api als van coderen zelf, wat het gebruik van de vibe coding aanpak bemoeilijkt. Hoewel LLM’s sterk geevolueerd zijn de laatste paar jaren op vlak van coderen missen ze de kennis van de onderliggende structuur van de omgeving. 
+Het gebruik van LLM’s binnen softwareontwikkeling wordt steeds vaker toegepast, onder meer binnen het paradigma van agent-assisted coding, waarbij ontwikkelaars via promts (primaire communicatie-interface tussen gebruiker en model (\cite{zhou2025prompt}) code laten genereren zonder  zelf veel denkwerk te verrichten  (\cite{google2025vibecoding}). In bedrijfscontext met complexe API’s blijft het correct toepassen van deze aanpak een uitdaging. Dit onderzoek vertrekt vanuit een concrete casus binnen een game server managementplatform nl. Takaro.io. Het creeëren van modules vereist momenteel diepgaande kennis zowel van de api als van coderen zelf, wat het gebruik van de agent-assisted coding aanpak bemoeilijkt. Hoewel LLM’s sterk geevolueerd zijn de laatste paar jaren op vlak van coderen missen ze de kennis van de onderliggende structuur van de omgeving. 
 De doelgroep van dit onderzoek bestaat uit IT-professionals die betrokken zijn bij de ontwikkeling en het onderhoud van dit platform. De centrale onderzoeksvraag luidt:
-\textit{Hoe kan een MCP-ondersteunde coding agent worden ontworpen en geëvalueerd die, binnen een vibe coding-context, correcte en herbruikbare codefragmenten genereert voor game server management via een complexe API?}  
-De doelstelling van dit onderzoek is het ontwikkelen van een proof of concept van een MCP-ondersteunde coding agent die deze problematiek adresseert. Het onderzoek wordt als succesvol beschouwd wanneer het proof of concept aantoont dat MCP de correctheid en herbruikbaarheid van door vibe coding gegenereerde code verhoogt, aangevuld met concrete aanbevelingen voor verdere toepassing binnen de casusomgeving.
+\textit{Hoe kan een MCP-ondersteunde coding agent worden ontworpen en geëvalueerd die, binnen een agent-assisted coding-context, correcte en herbruikbare codefragmenten genereert voor game server management via een complexe API?}  
+De doelstelling van dit onderzoek is het ontwikkelen van een proof of concept van een MCP-ondersteunde coding agent die deze problematiek adresseert. Het onderzoek wordt als succesvol beschouwd wanneer het proof of concept aantoont dat MCP de correctheid en herbruikbaarheid van door agent-assisted gegenereerde code verhoogt, aangevuld met concrete aanbevelingen voor verdere toepassing binnen de casusomgeving.
 
 %---------- Stand van zaken ---------------------------------------------------
 
@@ -25,17 +25,18 @@ De doelstelling van dit onderzoek is het ontwikkelen van een proof of concept va
 
 \textbf{Hoofdonderzoeksvraag}
 \begin{itemize}
-  \item Hoe kan een MCP-ondersteunde coding agent worden ontworpen en geëvalueerd die, binnen een vibe coding-context, correcte en herbruikbare codefragmenten genereert voor game server management via een complexe API?
+  \item Hoe kan een MCP-ondersteunde coding agent worden ontworpen en geëvalueerd die, correcte en herbruikbare codefragmenten genereert voor game server management via een complexe API?
 \end{itemize}
 
-\textbf{Deelvragen~--~Probleemdomein}
+\textbf{Deelvragen-Probleemdomein}
 \begin{itemize}
   \item Welke fouten treden op bij het genereren van code voor een complexe game server management API zonder structurele ondersteuning?
   \item Hoe kan de correctheid en kwaliteit van door een LLM gegenereerde codefragmenten objectief worden geëvalueerd binnen een proof of concept?
   \item Welke technische en methodologische beperkingen zijn van invloed op het gebruik van MCP en LLM-gebaseerde codegeneratie binnen dit onderzoek?
+  \item Welke technieken kunnen er toegepast worden tijdens het opzetten van de MCP-server om de gelimiteerde context waarover LLM's beschikken zo effectief mogelijk te gebruiken?
 \end{itemize}
 
-\textbf{Deelvragen~--~Oplossingsdomein}
+\textbf{Deelvragen-Oplossingsdomein}
 \begin{itemize}
   \item Hoe kan een MCP-server worden ontworpen om een complexe game server management API op een gestructureerde en bruikbare manier beschikbaar te maken voor codegeneratie?
   \item Hoe kan een coding agent MCP-tools gebruiken om gebruikersvragen te vertalen naar correcte en samenhangende codefragmenten?
@@ -45,13 +46,15 @@ De doelstelling van dit onderzoek is het ontwikkelen van een proof of concept va
 \section{Literatuurstudie}
 \label{sec:literatuurstudie}
 
-De Model Context Protocol (MCP) werd geïntroduceerd als een open standaard om Large Language Models (LLM’s) op een gestructureerde en veilige manier te laten interageren met externe tools en API’s. In tegenstelling tot traditionele function calling of contextgebaseerde benaderingen zoals Retrieval-Augmented Generation (RAG), voorziet MCP in dynamische capability discovery, gestandaardiseerde toolinterfaces en stateful interacties. Hierdoor positioneert MCP zich als een veelbelovende infrastructuur voor agent-gebaseerde LLM-toepassingen en complexe workflow-ondersteuning \cite{ray2025mcp_survey}.
+De Model Context Protocol (MCP) werd geïntroduceerd als een open standaard om Large Language Models (LLM’s) op een gestructureerde en veilige manier te laten interageren met externe tools en API’s. In tegenstelling tot traditionele function calling of contextgebaseerde benaderingen zoals Retrieval-Augmented Generation (RAG), voorziet MCP in dynamische capability discovery, gestandaardiseerde toolinterfaces en stateful interacties. Hierdoor positioneert MCP zich als een veelbelovende infrastructuur voor agent-gebaseerde LLM-toepassingen en complexe workflow-ondersteuning.\cite{Ray_2025}
 
-Recente studies tonen echter aan dat het gebruik van MCP niet automatisch leidt tot betere prestaties. Vergelijkend experimenteel onderzoek naar verschillende MCP-servers wijst uit dat tokengebruik en latentie sterk kunnen variëren, en dat MCP in bepaalde scenario’s geen significante verbetering in correctheid oplevert ten opzichte van klassieke function calling. De effectiviteit van MCP blijkt sterk afhankelijk te zijn van de mate waarin API-capabilities op een geschikte manier worden geabstraheerd en aangeboden aan het LLM \cite{mcp_eval_function_calling}.
+Recente studies tonen echter aan dat het gebruik van MCP niet automatisch leidt tot betere prestaties. Vergelijkend experimenteel onderzoek naar verschillende MCP-servers wijst uit dat tokengebruik en latentie sterk kunnen variëren, en dat MCP in bepaalde scenario’s geen significante verbetering in correctheid oplevert ten opzichte van klassieke function calling. De effectiviteit van MCP blijkt sterk afhankelijk te zijn van de mate waarin API-capabilities op een geschikte manier worden geabstraheerd en aangeboden aan het LLM.\cite{hou2025modelcontextprotocolmcp}
 
-Daarnaast wijst empirisch onderzoek op belangrijke risico’s op het vlak van beveiliging en onderhoudbaarheid van MCP-servers. Een grootschalige analyse van open-source MCP-implementaties identificeert zowel traditionele kwetsbaarheden, zoals onveilige credentialverwerking, als MCP-specifieke problemen zoals tool poisoning en onvoldoende afgebakende permissies. Ook werden frequente code smells en onderhoudsproblemen vastgesteld, wat de betrouwbaarheid van MCP-gebaseerde systemen op lange termijn kan beïnvloeden \cite{mcp_security_analysis}.
+Daarnaast wijst empirisch onderzoek op belangrijke risico’s op het vlak van beveiliging en onderhoudbaarheid van MCP-servers. Een grootschalige analyse van open-source MCP-implementaties identificeert zowel traditionele kwetsbaarheden, zoals onveilige credentialverwerking, als MCP-specifieke problemen zoals tool poisoning en onvoldoende afgebakende permissies. Ook werden frequente code smells en onderhoudsproblemen vastgesteld, wat de betrouwbaarheid van MCP-gebaseerde systemen op lange termijn kan beïnvloeden.\cite{Hasan2025MCPFirstGlance}
 
-De bestaande literatuur focust voornamelijk op MCP als mechanisme voor tool-invocation, contextinjectie en workflow-orchestratie. Er is echter een gebrek aan onderzoek dat MCP benadert als ondersteunende laag voor een \textit{coding agent} die, binnen een vibe coding-context, correcte en herbruikbare codefragmenten genereert door meerdere API-operaties te combineren. Eveneens onderbelicht blijft de afweging tussen token-efficiëntie, correctheid van gegenereerde code en herbruikbaarheid binnen een modulair platform.
+De bestaande literatuur focust voornamelijk op MCP als mechanisme voor tool-invocation, contextinjectie en workflow-orchestratie. Er is echter een gebrek aan onderzoek dat MCP benadert als ondersteunende laag voor een \textit{coding agent} die, binnen een agent-assisted coding-context, correcte en herbruikbare codefragmenten genereert door meerdere API-operaties te combineren. Eveneens onderbelicht blijft de afweging tussen token-efficiëntie, correctheid van gegenereerde code en herbruikbaarheid binnen een modulair platform.
+
+Alla \cite{Alla2025FastMCP} beschrijft met FastMCP een schaalbare MCP server-clientarchitectuur voor contextmanagement in microservices. Het artikel is relevant als technische casestudie die aantoont hoe MCP in de praktijk kan worden geïmplementeerd om context op een gecontroleerde en efficiënte manier beschikbaar te maken. Hoewel FastMCP zich voornamelijk richt op performantie en schaalbaarheid en niet expliciet op codegeneratie door Large Language Models, biedt het waardevolle inzichten in het structureren en beheren van context binnen beperkte contextvensters. Het artikel wordt daarom gebruikt als ondersteunende technische referentie binnen deze literatuurstudie.
 
 Deze vastgestelde onderzoekslacune vormt de basis voor deze bachelorproef. Het onderzoek evalueert MCP niet als einddoel, maar als een structurele ondersteuningslaag voor codegeneratie met LLM’s. Door middel van een proof of concept wordt onderzocht in welke mate MCP kan bijdragen aan het genereren van correctere en herbruikbare codefragmenten voor een game server managementplatform.
 
@@ -62,7 +65,6 @@ Deze vastgestelde onderzoekslacune vormt de basis voor deze bachelorproef. Het o
 %   functie heeft in de zin (bv. ``Uit onderzoek door Doll & Hill (1954) bleek
 %   ...'')
 
-Je mag deze sectie nog verder onderverdelen in subsecties als dit de structuur van de tekst kan verduidelijken.
 
 %---------- Methodologie ------------------------------------------------------
 \section{Methodologie}
@@ -76,17 +78,13 @@ Het onderzoek wordt uitgevoerd in vier opeenvolgende fasen. Elke fase draagt bij
 
 \subsection{Fase 1: Literatuurstudie en probleemverkenning}
 
-In de eerste fase wordt een gerichte literatuurstudie uitgevoerd rond Large Language Models, codegeneratie, vibe coding en het Model Context Protocol (MCP). Hierbij wordt gefocust op bestaande architecturen, beperkingen en risico’s van MCP-servers, evenals op de huidige stand van zaken rond LLM-gebaseerde codegeneratie voor complexe API’s. Deze fase dient om het probleemdomein af te bakenen en bestaande oplossingen en onderzoekslacunes te identificeren.
+In de eerste fase wordt een gerichte literatuurstudie uitgevoerd rond Large Language Models, codegeneratie, agent-assisted coding en het Model Context Protocol (MCP). Hierbij wordt gefocust op bestaande architecturen, beperkingen en risico’s van MCP-servers, evenals op de huidige stand van zaken rond LLM-gebaseerde codegeneratie voor complexe API’s. Deze fase dient om het probleemdomein af te bakenen en bestaande oplossingen en onderzoekslacunes te identificeren.
 
-\textbf{Onderzoekstechniek:} literatuurstudie  
-\textbf{Deliverables:} literatuuroverzicht en afgebakende probleemstelling
 
 \subsection{Fase 2: Analyse van de casus en requirements}
 
 Vervolgens wordt de concrete casus geanalyseerd, met name het gebruik van de Takaro game server management API binnen het platform. De API-structuur, typische gebruiksscenario’s en veelvoorkomende beheertaken worden in kaart gebracht. Op basis hiervan worden functionele en niet-functionele vereisten opgesteld voor de MCP-server en de coding agent. Deze analyse gebeurt op basis van technische documentatie en praktijkgerichte use-cases, niet via subjectieve bevragingen.
 
-\textbf{Onderzoekstechniek:} casusanalyse en technische requirements-analyse  
-\textbf{Deliverables:} overzicht van API-capabilities, use-cases en requirementsdocument
 
 \subsection{Fase 3: Ontwerp en implementatie van het proof of concept}
 
@@ -94,15 +92,14 @@ In deze fase wordt een MCP-server ontworpen die relevante API-functionaliteit op
 
 Het proof of concept focust op codegeneratie en bevat geen autonome uitvoering van beheertaken. De gebruiker blijft steeds verantwoordelijk voor validatie en het eventueel toevoegen van gegenereerde code als herbruikbare module binnen het platform.
 
-\textbf{Onderzoekstechniek:} ontwerpgericht onderzoek en proof of concept  
-\textbf{Deliverables:} MCP-server, coding agent en technische documentatie
 
 \subsection{Fase 4: Evaluatie en vergelijking}
 
-Tot slot wordt het proof of concept geëvalueerd aan de hand van een beperkte set vooraf gedefinieerde gebruikersvragen. De gegenereerde codefragmenten worden beoordeeld op basis van objectieve criteria zoals syntactische correctheid, correcte API-aanwending en herbruikbaarheid. Daarnaast wordt een vergelijking gemaakt tussen codegeneratie met en zonder MCP-ondersteuning, om de toegevoegde waarde van MCP te evalueren.
+Tot slot wordt het proof of concept geëvalueerd aan de hand van een beperkte set vooraf gedefinieerde gebruikersvragen. 
+De gegenereerde codefragmenten worden beoordeeld op basis van objectieve criteria zoals syntactische correctheid, correcte API-aanwending en herbruikbaarheid. 
+Benchmark tools zoals MCPToolBench++ (\cite{Fan2025MCPToolBenchPP}) en MCP-Universe (\cite{Luo2025MCPUniverse}) kunnen gebruikt worden om de interactie tussen LLM en MCP-server te evalueren. 
+Daarnaast kan \textit{Langfuse} (\cite{langfuse_evaluation}) gebruikt worden voor de algemene evaluatie en observability van de volledige agent, inclusief trace-analyse, metriekverzameling en (LLM-gebaseerde) evaluaties van agentgedrag in productie en offline experimenten.
 
-\textbf{Onderzoekstechniek:} experimentele evaluatie en vergelijkende studie  
-\textbf{Deliverables:} evaluatieresultaten, analyse en conclusies
 
 \subsection{Gebruikte tools en technologieën}
 
@@ -135,8 +132,10 @@ Deze bachelorproef heeft als doel het ontwikkelen en evalueren van een proof of 
 
 Concreet wordt verwacht dat codefragmenten die gegenereerd worden met MCP-ondersteuning minder fouten bevatten met betrekking tot API-aanwending, zoals het gebruik van incorrecte endpoints, ontbrekende parameters of een foutieve volgorde van API-operaties. Daarnaast wordt verwacht dat deze codefragmenten consistenter zijn opgebouwd en daardoor beter geschikt zijn om te worden opgeslagen en hergebruikt als modules binnen het platform. Daartegenover staat de hypothese dat het gebruik van MCP kan leiden tot een verhoogd tokengebruik en een hogere complexiteit in de initiële setup.
 
-Voor de evaluatie worden verschillende metingen uitgevoerd, waarvan de resultaten visueel kunnen worden voorgesteld. Een eerste grafiek vergelijkt het percentage correct gegenereerde codefragmenten met en zonder MCP-ondersteuning. De x-as stelt hierbij de gebruikte methode voor (zonder MCP versus met MCP), terwijl de y-as het percentage correctheid weergeeft op basis van vooraf gedefinieerde evaluatiecriteria. Een tweede grafiek kan het gemiddeld tokengebruik per gegenereerd codefragment tonen, waarbij de x-as opnieuw de gebruikte methode weergeeft en de y-as het gemiddeld aantal tokens.
+Voor de evaluatie worden enerzijds bestaande modules veergeleken met de MCP gegenereerde modules deze dataset is redelijk klein, maar bevat de basisfunctionaliteiten vereist om de correctheid van de gegenereerde code te beooredelen.
+Aanvullend hierop zal de MCP-server technisch worden geëvalueerd aan de hand van objectieve criteria. De kwaliteit van de gegenereerde modules zal worden beoordeeld op basis van hun functionele correctheid en bruikbaarheid binnen het platform. De evaluatie gebeurt enerzijds door na te gaan of de gegenereerde code zonder verdere aanpassingen kan worden geïntegreerd als herbruikbare module, en anderzijds door het aantal iteraties dat nodig is om tot een correcte en functionele codeoplossing te komen. Deze metrieken bieden inzicht in zowel de effectiviteit van de codegeneratie als de efficiëntie van het gebruik van het beschikbare context window.
 
-Op basis van deze metingen wordt verwacht te kunnen concluderen dat MCP een duidelijke meerwaarde biedt voor codegeneratie in een vibe coding-context, ondanks een mogelijke toename in tokengebruik. Indien deze hypothese niet bevestigd wordt, biedt dit waardevolle inzichten in de beperkingen van MCP en de omstandigheden waarin het protocol minder geschikt is voor codegeneratie.
+
+Op basis van deze metingen wordt verwacht te kunnen concluderen dat MCP een duidelijke meerwaarde biedt voor codegeneratie in een agent-assisted coding-context, ondanks een mogelijke toename in tokengebruik. Indien deze hypothese niet bevestigd wordt, biedt dit waardevolle inzichten in de beperkingen van MCP en de omstandigheden waarin het protocol minder geschikt is voor codegeneratie.
 
 De doelgroep van dit onderzoek, met name IT-professionals die instaan voor de ontwikkeling en het onderhoud van het game server managementplatform, verkrijgt inzicht in hoe LLM’s op een gecontroleerde en herbruikbare manier kunnen worden ingezet voor codegeneratie. De proof of concept en de bijhorende conclusies bieden een concrete basis voor verdere uitbreiding van het platform met AI-ondersteunde ontwikkeltools. De bachelorproef levert hierdoor zowel een technisch artefact als onderbouwde aanbevelingen op, wat zorgt voor een duidelijke meerwaarde binnen de specifieke bedrijfscontext.

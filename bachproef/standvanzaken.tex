@@ -7,45 +7,16 @@
 
 % Pas na deze inleidende paragraaf komt de eerste sectiehoofding.
 
-Dit hoofdstuk bevat je literatuurstudie. De inhoud gaat verder op de inleiding, maar zal het onderwerp van de bachelorproef *diepgaand* uitspitten. De bedoeling is dat de lezer na lezing van dit hoofdstuk helemaal op de hoogte is van de huidige stand van zaken (state-of-the-art) in het onderzoeksdomein. Iemand die niet vertrouwd is met het onderwerp, weet nu voldoende om de rest van het verhaal te kunnen volgen, zonder dat die er nog andere informatie moet over opzoeken \autocite{Pollefliet2011}.
 
-Je verwijst bij elke bewering die je doet, vakterm die je introduceert, enz.\ naar je bronnen. In \LaTeX{} kan dat met het commando \texttt{$\backslash${textcite\{\}}} of \texttt{$\backslash${autocite\{\}}}. Als argument van het commando geef je de ``sleutel'' van een ``record'' in een bibliografische databank in het Bib\LaTeX{}-formaat (een tekstbestand). Als je expliciet naar de auteur verwijst in de zin (narratieve referentie), gebruik je \texttt{$\backslash${}textcite\{\}}. Soms is de auteursnaam niet expliciet een onderdeel van de zin, dan gebruik je \texttt{$\backslash${}autocite\{\}} (referentie tussen haakjes). Dit gebruik je bv.~bij een citaat, of om in het bijschrift van een overgenomen afbeelding, broncode, tabel, enz. te verwijzen naar de bron. In de volgende paragraaf een voorbeeld van elk.
+De Model Context Protocol (MCP) werd geïntroduceerd als een open standaard om Large Language Models (LLM’s) op een gestructureerde en veilige manier te laten interageren met externe tools en API’s. In tegenstelling tot traditionele function calling of contextgebaseerde benaderingen zoals Retrieval-Augmented Generation (RAG), voorziet MCP in dynamische capability discovery, gestandaardiseerde toolinterfaces en stateful interacties. Hierdoor positioneert MCP zich als een veelbelovende infrastructuur voor agent-gebaseerde LLM-toepassingen en complexe workflow-ondersteuning.\cite{Ray_2025}
 
-\textcite{Knuth1998} schreef een van de standaardwerken over sorteer- en zoekalgoritmen. Experten zijn het erover eens dat cloud computing een interessante opportuniteit vormen, zowel voor gebruikers als voor dienstverleners op vlak van informatietechnologie~\autocite{Creeger2009}.
+Recente studies tonen echter aan dat het gebruik van MCP niet automatisch leidt tot betere prestaties. Vergelijkend experimenteel onderzoek naar verschillende MCP-servers wijst uit dat tokengebruik en latentie sterk kunnen variëren, en dat MCP in bepaalde scenario’s geen significante verbetering in correctheid oplevert ten opzichte van klassieke function calling. De effectiviteit van MCP blijkt sterk afhankelijk te zijn van de mate waarin API-capabilities op een geschikte manier worden geabstraheerd en aangeboden aan het LLM.\cite{hou2025modelcontextprotocolmcp}
 
-Let er ook op: het \texttt{cite}-commando voor de punt, dus binnen de zin. Je verwijst meteen naar een bron in de eerste zin die erop gebaseerd is, dus niet pas op het einde van een paragraaf.
+Daarnaast wijst empirisch onderzoek op belangrijke risico’s op het vlak van beveiliging en onderhoudbaarheid van MCP-servers. Een grootschalige analyse van open-source MCP-implementaties identificeert zowel traditionele kwetsbaarheden, zoals onveilige credentialverwerking, als MCP-specifieke problemen zoals tool poisoning en onvoldoende afgebakende permissies. Ook werden frequente code smells en onderhoudsproblemen vastgesteld, wat de betrouwbaarheid van MCP-gebaseerde systemen op lange termijn kan beïnvloeden.\cite{Hasan2025MCPFirstGlance}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{grail.jpg}
-  \caption[Voorbeeld figuur.]{\label{fig:grail}Voorbeeld van invoegen van een figuur. Zorg altijd voor een uitgebreid bijschrift dat de figuur volledig beschrijft zonder in de tekst te moeten gaan zoeken. Vergeet ook je bronvermelding niet!}
-\end{figure}
+De bestaande literatuur focust voornamelijk op MCP als mechanisme voor tool-invocation, contextinjectie en workflow-orchestratie. Er is echter een gebrek aan onderzoek dat MCP benadert als ondersteunende laag voor een \textit{coding agent} die, binnen een agent-assisted coding-context, correcte en herbruikbare codefragmenten genereert door meerdere API-operaties te combineren. Eveneens onderbelicht blijft de afweging tussen token-efficiëntie, correctheid van gegenereerde code en herbruikbaarheid binnen een modulair platform.
 
-\begin{listing}
-  \begin{minted}{python}
-    import pandas as pd
-    import seaborn as sns
+Alla \cite{Alla2025FastMCP} beschrijft met FastMCP een schaalbare MCP server-clientarchitectuur voor contextmanagement in microservices. Het artikel is relevant als technische casestudie die aantoont hoe MCP in de praktijk kan worden geïmplementeerd om context op een gecontroleerde en efficiënte manier beschikbaar te maken. Hoewel FastMCP zich voornamelijk richt op performantie en schaalbaarheid en niet expliciet op codegeneratie door Large Language Models, biedt het waardevolle inzichten in het structureren en beheren van context binnen beperkte contextvensters. Het artikel wordt daarom gebruikt als ondersteunende technische referentie binnen deze literatuurstudie.
 
-    penguins = sns.load_dataset('penguins')
-    sns.relplot(data=penguins, x="flipper_length_mm", y="bill_length_mm", hue="species")
-  \end{minted}
-  \caption[Voorbeeld codefragment]{Voorbeeld van het invoegen van een codefragment.}
-\end{listing}
-
-\lipsum[7-20]
-
-\begin{table}
-  \centering
-  \begin{tabular}{lcr}
-    \toprule
-    \textbf{Kolom 1} & \textbf{Kolom 2} & \textbf{Kolom 3} \\
-    $\alpha$         & $\beta$          & $\gamma$         \\
-    \midrule
-    A                & 10.230           & a                \\
-    B                & 45.678           & b                \\
-    C                & 99.987           & c                \\
-    \bottomrule
-  \end{tabular}
-  \caption[Voorbeeld tabel]{\label{tab:example}Voorbeeld van een tabel.}
-\end{table}
+Deze vastgestelde onderzoekslacune vormt de basis voor deze bachelorproef. Het onderzoek evalueert MCP niet als einddoel, maar als een structurele ondersteuningslaag voor codegeneratie met LLM’s. Door middel van een proof of concept wordt onderzocht in welke mate MCP kan bijdragen aan het genereren van correctere en herbruikbare codefragmenten voor een game server managementplatform.
 

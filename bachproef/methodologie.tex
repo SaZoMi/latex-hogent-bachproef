@@ -5,6 +5,39 @@
 \chapter{\IfLanguageName{dutch}{Methodologie}{Methodology}}%
 \label{ch:methodologie}
 
+
+
+Deze bachelorproef betreft een vorm van \textit{toegepast onderzoek} en vertrekt vanuit een concrete probleemsituatie binnen een game server managementplatform dat gebruikmaakt van een complexe API. Het onderzoek combineert een literatuurstudie met ontwerpgericht onderzoek en experimentele evaluatie, resulterend in een technisch proof of concept (PoC). De gekozen methodologie is erop gericht om objectieve en meetbare resultaten te bekomen en sluit aan bij de aard van een bachelorproef toegepaste informatica.
+
+\subsection{Onderzoeksopzet}
+
+Het onderzoek wordt uitgevoerd in vier opeenvolgende fasen. Elke fase draagt bij tot het beantwoorden van één of meerdere onderzoeksvragen en levert concrete artefacten op.
+
+\subsection{Fase 1: Literatuurstudie en probleemverkenning}
+
+In de eerste fase wordt een gerichte literatuurstudie uitgevoerd rond Large Language Models, codegeneratie, agent-assisted coding en het Model Context Protocol (MCP). Hierbij wordt gefocust op bestaande architecturen, beperkingen en risico’s van MCP-servers, evenals op de huidige stand van zaken rond LLM-gebaseerde codegeneratie voor complexe API’s. Deze fase dient om het probleemdomein af te bakenen en bestaande oplossingen en onderzoekslacunes te identificeren.
+
+
+\subsection{Fase 2: Analyse van de casus en requirements}
+
+Vervolgens wordt de concrete casus geanalyseerd, met name het gebruik van de Takaro game server management API binnen het platform. De API-structuur, typische gebruiksscenario’s en veelvoorkomende beheertaken worden in kaart gebracht. Op basis hiervan worden functionele en niet-functionele vereisten opgesteld voor de MCP-server en de coding agent. Deze analyse gebeurt op basis van technische documentatie en praktijkgerichte use-cases, niet via subjectieve bevragingen.
+
+
+\subsection{Fase 3: Ontwerp en implementatie van het proof of concept}
+
+In deze fase wordt een MCP-server ontworpen die relevante API-functionaliteit op een gestructureerde manier aanbiedt aan een LLM. Hierbij wordt bewust gekozen voor abstraherende MCP-tools die meerdere API-operaties kunnen combineren. Vervolgens wordt een coding agent ontwikkeld die gebruikersvragen in natuurlijke taal vertaalt naar codefragmenten met behulp van deze MCP-tools.
+
+Het proof of concept focust op codegeneratie en bevat geen autonome uitvoering van beheertaken. De gebruiker blijft steeds verantwoordelijk voor validatie en het eventueel toevoegen van gegenereerde code als herbruikbare module binnen het platform.
+
+
+\subsection{Fase 4: Evaluatie en vergelijking}
+
+Tot slot wordt het proof of concept geëvalueerd aan de hand van een beperkte set vooraf gedefinieerde gebruikersvragen. 
+De gegenereerde codefragmenten worden beoordeeld op basis van objectieve criteria zoals syntactische correctheid, correcte API-aanwending en herbruikbaarheid. 
+Benchmark tools zoals MCPToolBench++ (\cite{Fan2025MCPToolBenchPP}) en MCP-Universe (\cite{Luo2025MCPUniverse}) kunnen gebruikt worden om de interactie tussen LLM en MCP-server te evalueren. 
+Daarnaast kan \textit{Langfuse} (\cite{langfuse_evaluation}) gebruikt worden voor de algemene evaluatie en observability van de volledige agent, inclusief trace-analyse, metriekverzameling en (LLM-gebaseerde) evaluaties van agentgedrag in productie en offline experimenten.
+
+
 %% TODO: In dit hoofstuk geef je een korte toelichting over hoe je te werk bent
 %% gegaan. Verdeel je onderzoek in grote fasen, en licht in elke fase toe wat
 %% de doelstelling was, welke deliverables daar uit gekomen zijn, en welke
@@ -26,5 +59,4 @@
 %% Maak voor elke fase (behalve het literatuuronderzoek) een NIEUW HOOFDSTUK aan
 %% en geef het een gepaste titel.
 
-\lipsum[21-25]
 
