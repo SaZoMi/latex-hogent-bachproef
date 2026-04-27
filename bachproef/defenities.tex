@@ -1,0 +1,132 @@
+\chapter{\IfLanguageName{dutch}{Definities}{Definitions}}
+\label{ch:definities}
+
+Onderstaande tabel bevat definities van technische termen die in dit werk worden vermeld maar niet uitgebreid worden toegelicht in de hoofdtekst.
+
+\begin{longtable}{p{0.28\textwidth} p{0.65\textwidth}}
+\toprule
+\textbf{Term} & \textbf{Definitie} \\
+\midrule
+\endfirsthead
+\multicolumn{2}{c}{\tablename\ \thetable{} -- vervolg} \\
+\toprule
+\textbf{Term} & \textbf{Definitie} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\bottomrule
+\endlastfoot
+
+API \newline \small(Application Programming Interface) &
+    Een set afspraken en specificaties die bepaalt hoe softwarecomponenten met elkaar communiceren. Een API legt vast welke functies of endpoints een dienst aanbiedt, welke parameters verwacht worden en in welk formaat resultaten worden teruggegeven. \\
+\midrule
+
+AutoGPT &
+    Een autonoom AI-agentsysteem gebaseerd op GPT-modellen dat complexe taken zelfstandig uitvoert via een opeenvolging van tool-aanroepen, zonder tussenkomst van de gebruiker bij elke stap. \\
+\midrule
+
+AWS Lambda &
+    Een serverless computing-dienst van Amazon Web Services waarmee code wordt uitgevoerd als reactie op events, zonder dat de ontwikkelaar servers hoeft te beheren of te provisioneren. \\
+\midrule
+
+base64 &
+    Een binair-naar-tekst coderingsschema dat willekeurige binaire gegevens omzet naar een reeks van 64 afdrukbare ASCII-tekens, zodat die gegevens veilig kunnen worden opgenomen in tekstgebaseerde protocollen zoals JSON of HTTP. \\
+\midrule
+
+BERT \newline \small(Bidirectional Encoder Representations from Transformers) &
+    Een bidirectioneel Transformer-taalmodel ontwikkeld door Google dat de volledige inputsequentie in beide richtingen verwerkt om rijke, contextgevoelige woordrepresentaties te produceren. BERT wordt gebruikt als basis voor een groot aantal downstream NLP-taken. \\
+\midrule
+
+CDN \newline \small(Content Delivery Network) &
+    Een gedistribueerd netwerk van servers, verspreid over meerdere geografische locaties, dat inhoud aan eindgebruikers levert vanuit de dichtstbijzijnde locatie om latency te verlagen en beschikbaarheid te verhogen. \\
+\midrule
+
+circuit breaker &
+    Een softwarepatroon voor fouttolerantie dat verdere aanroepen naar een component tijdelijk blokkeert wanneer het foutenpercentage een drempelwaarde overschrijdt, om te voorkomen dat een falende dienst cascade-fouten veroorzaakt in de rest van het systeem. \\
+\midrule
+
+Cloudflare Workers &
+    Een edge computing-platform van Cloudflare waarmee JavaScript- of WebAssembly-code wordt uitgevoerd op servers dicht bij de eindgebruiker, zonder een centraal serverproces. \\
+\midrule
+
+GeLU \newline \small(Gaussian Error Linear Unit) &
+    Een niet-lineaire activatiefunctie die in neurale netwerken wordt gebruikt en waarbij de activatie wordt gewogen door de cumulatieve verdeling van de standaard normaalverdeling, wat een vloeiende benadering geeft van de ReLU-functie. \\
+\midrule
+
+GloVe \newline \small(Global Vectors for Word Representation) &
+    Een methode voor het genereren van woordvectorrepresentaties op basis van globale co-occurrence-statistieken in een corpus. GloVe leert vectoren zodat hun inproduct de logaritme van de co-occurrencefrequentie van twee woorden benadert. \\
+\midrule
+
+Google Cloud Run &
+    Een volledig beheerd serverless platform van Google Cloud voor het uitvoeren van containergebaseerde applicaties, waarbij de infrastructuur automatisch wordt geschaald op basis van het inkomende verkeer. \\
+\midrule
+
+GPU \newline \small(Graphics Processing Unit) &
+    Een gespecialiseerde processor die oorspronkelijk is ontworpen voor grafische berekeningen maar door zijn massief parallelle architectuur uitermate geschikt is voor de matrixbewerkingen die nodig zijn bij het trainen van grote neurale netwerken. \\
+\midrule
+
+ISO~8601 &
+    Een internationale standaard van de International Organization for Standardization voor de eenduidige tekstuele weergave van datum en tijd, bijvoorbeeld \texttt{2025-11-25T14:30:00Z}. \\
+\midrule
+
+JSON \newline \small(JavaScript Object Notation) &
+    Een lichtgewicht, tekstgebaseerd gegevensuitwisselingsformaat dat is opgebouwd uit sleutel-waardeparen en geordende lijsten. JSON is taal-agnostisch, leesbaar voor mensen en breed ondersteund als standaard serialisatieformaat in webprotocollen. \\
+\midrule
+
+LangChain &
+    Een open-source framework voor het bouwen van applicaties met large language models, met ingebouwde ondersteuning voor agentic workflows, tool-integratie, geheugen en het samenstellen van keten-gebaseerde prompt-pipelines. \\
+\midrule
+
+Langfuse &
+    Een open-source observability- en evaluatieplatform voor LLM-applicaties dat tool-aanroepen, modelresponsen, latency en hallucinatieratio's traceert en inzichtelijk maakt voor debuggen en kwaliteitsborging. \\
+\midrule
+
+load balancer &
+    Een component in een netwerkarchitectuur die inkomend verkeer verdeelt over meerdere backend-servers of -instanties om overbelasting van één server te voorkomen en hoge beschikbaarheid te garanderen. \\
+\midrule
+
+LSP \newline \small(Language Server Protocol) &
+    Een open protocol, ontwikkeld door Microsoft, dat de communicatie standaardiseert tussen code-editors en taalanalyseservices (language servers) voor functionaliteit zoals automatisch aanvullen, foutcontrole en definitie-opzoeken. \\
+\midrule
+
+MIME-type \newline \small(Multipurpose Internet Mail Extensions type) &
+    Een gestandaardiseerde identificator die het formaat en de aard van een bestand of datastream aangeeft, zoals \texttt{text/plain}, \texttt{application/json} of \texttt{image/png}. MIME-types worden onder meer gebruikt in HTTP-headers om het contenttype aan te geven. \\
+\midrule
+
+OAuth &
+    Een open standaard voor toegangsdelegatie waarmee een gebruiker een derde partij beperkte toegang kan verlenen tot zijn of haar resources op een server, zonder daarvoor het wachtwoord te hoeven delen. OAuth wordt breed ingezet voor het autoriseren van API-toegang. \\
+\midrule
+
+RFC \newline \small(Request for Comments) &
+    Een publicatie van de Internet Engineering Task Force (IETF) die internetstandaarden, protocollen en best practices beschrijft en definieert. Bekende voorbeelden zijn RFC~3986 (URI-syntax), RFC~6570 (URI-templates) en RFC~5424 (syslog-protocol). \\
+\midrule
+
+reverse proxy &
+    Een tussenliggende server die verzoeken van clients ontvangt en doorstuurt naar een of meerdere backend-servers. Een reverse proxy wordt vaak ingezet voor load balancing, caching, SSL-terminatie en beveiliging. \\
+\midrule
+
+SSE \newline \small(Server-Sent Events) &
+    Een W3C-standaard voor een unidirectioneel HTTP-mechanisme waarbij een server via een persistente, langdurige verbinding eenzijdig berichten naar een verbonden client kan pushen, zonder dat de client telkens opnieuw een verzoek hoeft te sturen. \\
+\midrule
+
+SWE-bench &
+    Een benchmarksuite voor de evaluatie van AI-softwareontwikkelingsagents op het oplossen van echte, gerapporteerde softwareissues uit open-source GitHub-repositories. SWE-bench Pro is een strengere variant die benchmarkcontaminatie vermindert door uitsluitend issues te gebruiken die na de trainingsknipdatum van de modellen zijn aangemaakt. \\
+\midrule
+
+SwiGLU \newline \small(Swish-Gated Linear Unit) &
+    Een activatiefunctie die wordt gebruikt in de feed-forward lagen van moderne Transformer-modellen. SwiGLU combineert een Swish-geactiveerde gate met een lineaire projectie, wat empirisch betere prestaties oplevert dan standaard ReLU of GeLU in grootschalige taalmodellen. \\
+\midrule
+
+URI \newline \small(Uniform Resource Identifier) &
+    Een tekenreeks die een abstracte of fysieke resource uniek identificeert. Een URI kan een locator zijn (URL) of een naam (URN). In MCP worden URI's gebruikt om resources te adresseren, met standaardschema's zoals \texttt{file://}, \texttt{https://} en \texttt{git://}. \\
+\midrule
+
+Word2Vec &
+    Een groep neurale netwerkmodellen, geïntroduceerd door Mikolov et al.\ (2013), voor het genereren van dichte woordvectorrepresentaties. Word2Vec leert vectoren zodat woorden met gelijkaardige contexten dicht bij elkaar liggen in de embeddingruimte, wat rekenkundige bewerkingen op semantische relaties mogelijk maakt. \\
+\midrule
+
+YaRN \newline \small(Yet another RoPE extensioN) &
+    Een techniek die de effectieve contextvensterlengte van een large language model uitbreidt door de basisfrequentie van de Rotary Positional Embeddings (RoPE) aan te passen tijdens fijnafstemming, zonder het volledige model opnieuw te trainen. \\
+
+\end{longtable}
