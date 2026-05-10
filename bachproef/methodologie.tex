@@ -1,14 +1,13 @@
 %%=============================================================================
 %% Methodologie
 %%=============================================================================
-
 \chapter{\IfLanguageName{dutch}{Methodologie}{Methodology}}%
 \label{ch:methodologie}
 
-Deze bachelorproef volgt een \textit{design science research}-aanpak: er wordt een concreet artefact ontwikkeld — een MCP-server — en dit artefact wordt vervolgens empirisch gevalideerd. Deze aanpak is geschikt voor toegepast informaticaonderzoek waarbij de primaire bijdrage een werkend systeem is eerder dan een puur theoretisch model. De centrale onderzoeksvraag die dit werk aanstuurt, luidt:
+De methodologie volgt een \textit{design science research}-aanpak: er wordt een concreet artefact ontwikkeld — een MCP-server — en dit artefact wordt vervolgens empirisch gevalideerd. De centrale onderzoeksvraag die dit werk aanstuurt, luidt:
 
 \begin{quote}
-\textit{Kan een MCP-server LLM-agents effectief verbinden met een game server managementplatform om autonome moduleontwikkeling mogelijk te maken?}
+\textit{Kan een MCP-server LLM-agents te verbinden met een game server managementplatform om autonome moduleontwikkeling mogelijk te maken?}
 \end{quote}
 
 Het beantwoorden van deze vraag vereist twee complementaire activiteiten: het bouwen van de MCP-server en het experimenteel aantonen dat een LLM-agent daarmee autonoom Takaro-modules kan ontwikkelen, deployen en testen. Het onderzoek is opgedeeld in vier fasen.
@@ -26,10 +25,12 @@ In de tweede fase wordt de Takaro game server management API geanalyseerd. De AP
 \section{Fase 3: Ontwerp en implementatie van het proof of concept}
 \label{sec:fase3}
 
+Op basis van de requirements uit fase 2 wordt de MCP-server ontworpen en gebouwd. De ontwerpbeslissingen omvatten de keuze van technologiestack, de abstractie van de Takaro API naar MCP-tools en de beveiligingsperimeter van de server.
+
 \subsection{Ontwikkelingsmethodologie}
 \label{subsec:ontwikkeling}
 
-Het MCP-protocol was bij aanvang van dit project een relatief nieuw standaard met beperkte precedenten. Welke tools een LLM-agent werkelijk nodig heeft, kon niet volledig vooraf worden bepaald. Daarom werd gekozen voor een \textbf{iteratieve, prototype-gedreven aanpak} in opeenvolgende cycli:
+Omdat MCP bij aanvang van dit project een recent protocol was met beperkte precedenten, kon de vereiste toolset niet volledig vooraf worden bepaald. Er werd gekozen voor een \textbf{iteratieve, prototype-gedreven aanpak} in opeenvolgende cycli:
 
 \begin{enumerate}
     \item \textbf{Workflowanalyse} — de volledige moduleontwikkelworkflow werd in kaart gebracht (scaffold $\rightarrow$ broncode schrijven $\rightarrow$ metadata bijwerken $\rightarrow$ deployen $\rightarrow$ installeren $\rightarrow$ testen $\rightarrow$ debuggen $\rightarrow$ itereren) en een minimale toolset werd afgeleid per stap.
@@ -43,41 +44,41 @@ Het MCP-protocol was bij aanvang van dit project een relatief nieuw standaard me
 
 \subsubsection{Runtime en taal}
 
-Node.js met TypeScript werd gekozen als implementatieplatform. De primaire reden is de Takaro API-client (\texttt{@takaro/apiclient}), een TypeScript-pakket dat automatisch gegenereerd is vanuit de Takaro OpenAPI-specificatie. Een andere taal gebruiken zou betekenen dat de volledige REST API via ruwe HTTP-calls aangesproken moet worden of dat een onofficiële wrapper onderhouden moet worden, wat aanzienlijk onderhoudrisico introduceert. De \texttt{strict}-modus van TypeScript biedt bovendien compilatietijdse typecontrole voor tool-parameterschema’s.
+Node.js met TypeScript werd gekozen als implementatieplatform vanwege de Takaro API-client (\texttt{@takaro/apiclient}), een TypeScript-pakket automatisch gegenereerd vanuit de Takaro OpenAPI-specificatie. Een andere taal vereist het aanspreken van de volledige REST API via ruwe HTTP-calls of het onderhouden van een onofficiële wrapper, wat aanzienlijk onderhoudrisico introduceert. De \texttt{strict}-modus van TypeScript biedt bovendien compilatietijdse typecontrole voor tool-parameterschema’s.
 
 \subsubsection{Transportlaag}
 
-Het MCP-protocol ondersteunt twee transportmechanismen: stdio en HTTP met Server-Sent Events (SSE). Stdio-transport vereist dat de MCP-server als subprocess van de client draait, wat de server beperkt tot één lokale verbinding. HTTP-transport laat toe dat de server onafhankelijk draait — in een Docker-container, op een remote machine, of gedeeld door meerdere clients — zonder koppeling aan de levenscyclus van de client. Omdat de doelstelling van dit onderzoek een herbruikbare, inzetbare brug is, was HTTP-transport de architectureel correcte keuze.
+HTTP-transport werd verkozen boven stdio omdat de doelstelling een herbruikbare, inzetbare server is. Stdio beperkt de server tot één lokale verbinding als subprocess van de client; HTTP laat toe dat de server onafhankelijk draait — in een Docker-container, op een remote machine, of gedeeld door meerdere clients — zonder koppeling aan de levenscyclus van de client.
 
 \subsubsection{Validatie van toolparameters}
 
-Zod werd gebruikt voor runtime-validatie van alle toolparameters. Omdat toolaanroepen afkomstig zijn van een LLM-agent en niet van een getypeerde client, moeten parameterschema’s ook tijdens de uitvoering worden gevalideerd. Zod-schema’s vervullen een dubbele rol: ze dwingen correctheid af bij aanroep én genereren de JSON Schema-definities die via het MCP-protocol aan de LLM worden aangeboden.
+Zod werd ingezet voor runtime-validatie van alle toolparameters. Omdat toolaanroepen afkomstig zijn van een LLM-agent en niet van een getypeerde client, is validatie tijdens uitvoering noodzakelijk. Zod-schema’s vervullen een dubbele rol: ze dwingen correctheid af bij aanroep én genereren de JSON Schema-definities die via MCP aan de LLM worden aangeboden.
 
 \subsubsection{Deployment}
 
-Docker en Docker Compose werden gebruikt om de server te verpakken. Dit laat toe de server consistent te draaien over omgevingen heen zonder lokale Node.js-installatie, en maakt poort en moduledirectory configureerbaar via omgevingsvariabelen.
+Docker en Docker Compose verpakken de server voor consistente uitvoering over omgevingen heen, zonder vereiste van een lokale Node.js-installatie. Poort en moduledirectory zijn configureerbaar via omgevingsvariabelen.
 
 \subsection{Toolabstractieontwerp}
 \label{subsec:toolontwerp}
 
-Een centrale ontwerpbeslissing was de mapping van de Takaro REST API naar MCP-tools. Een naïeve één-op-één-mapping zou meer dan honderd tools opleveren, wat de cognitieve belasting voor de LLM-agent sterk verhoogt bij het selecteren van de juiste tool.
-
-In plaats daarvan werden tools geaggregeerd volgens twee regels:
+Een centrale ontwerpbeslissing was de mapping van de Takaro REST API naar MCP-tools. Een naïeve één-op-één-mapping zou meer dan honderd tools opleveren, wat de toolselectie voor de LLM-agent bemoeilijkt. Tools werden daarom geaggregeerd volgens twee regels:
 
 \begin{enumerate}
     \item \textbf{Scope} — endpoints die tot hetzelfde functionele subsysteem behoren (spelerbeheer, messaging, shop, hooks, cronjobs, enz.) worden samengebracht in één tool.
-    \item \textbf{HTTP-methode} — binnen een subsysteem worden operaties gegroepeerd naar methodesemantieken: opvraging (GET) enerzijds en mutatie of verwijdering (POST, PUT, DELETE) anderzijds worden uitgedrukt als modi of acties binnen dezelfde tool.
+    \item \textbf{HTTP-methode} — binnen een subsysteem worden opvragingen (GET) en mutaties of verwijderingen (POST, PUT, DELETE) uitgedrukt als afzonderlijke modi of acties binnen dezelfde tool.
 \end{enumerate}
 
-Dit resulteerde in 36 tools verdeeld over 10 functionele categorieën, waarbij elke tool overeenkomt met een developergericht concept in plaats van een API-endpoint. Dit vermindert het toolselectieprobleem voor de agent en sluit aan bij de manier waarop een ontwikkelaar over het platform nadenkt.
+Dit resulteerde in 36 tools verdeeld over 10 functionele categorieën, waarbij elke tool overeenkomt met een developergericht concept in plaats van een API-endpoint.
 
 \subsection{Beveiligingsontwerp}
 \label{subsec:beveiliging}
 
-Omdat de MCP-server schrijftoegang verleent tot een directory op de host, moet een specifieke dreiging worden aangepakt: een LLM-agent kan via hallucinatie of prompt-injectie vanuit externe gegevensbronnen een bestandspad construeren dat uit de bedoelde moduledirectory ontsnapt. Alle filesystemtools valideren daarom paden via \texttt{guardedModulePath()}, dat modulenamen met \texttt{..}, \texttt{/} of \texttt{\textbackslash} afwijst, symlinks oplost en verifieert dat het volledig opgeloste pad binnen de geconfigureerde \texttt{MODULES\_ROOT} blijft. Het \texttt{/mcp} HTTP-endpoint implementeert geen authenticatie — dit is een bewuste scopebeslissing voor lokale of Docker-geïsoleerde deployments en wordt erkend als beperking in sectie~\ref{sec:beperkingen}.
+De voornaamste dreiging is path traversal: een LLM-agent kan via hallucinatie of prompt-injectie een bestandspad construeren dat uit de bedoelde moduledirectory ontsnapt. Alle filesystemtools valideren paden via \texttt{guardedModulePath()}, dat namen met \texttt{..}, \texttt{/} of \texttt{\textbackslash} afwijst, symlinks oplost en verifieert dat het volledig opgeloste pad binnen \texttt{MODULES\_ROOT} blijft. Het \texttt{/mcp} HTTP-endpoint implementeert geen authenticatie — een bewuste scopebeslissing voor lokale of Docker-geïsoleerde deployments, erkend als beperking in sectie~\ref{sec:beperkingen}.
 
 \section{Fase 4: Evaluatie en vergelijking}
 \label{sec:fase4}
+
+Het gebouwde artefact wordt empirisch gevalideerd via een gestructureerde testset. De evaluatie meet functionele correctheid, zelfcorrectievermogen en prestatiekarakteristieken over meerdere modellen, en legt de resultaten vast aan de hand van reproduceerbare procedures.
 
 \subsection{Testcases}
 \label{subsec:testcases}
@@ -107,9 +108,7 @@ Voor complexe modules werd een \textbf{multi-agent orkestratiearchitectuur} ontw
     \item \textbf{Finale integratie} — de orchestrator voegt alle subagentoutputs samen, schrijft de volledige \texttt{module.json} en roept \texttt{push\_module} $\rightarrow$ \texttt{install\_module} $\rightarrow$ \texttt{poll\_events} aan om de module te deployen en te verifiëren.
 \end{itemize}
 
-Deze architectuur werd gevalideerd op de miniGames-module (GitHub issue \#31), een complexe module die zeven skill-gebaseerde minigames bundelt met gedeelde infrastructuur (een scorer-patroon, permissievermenigvuldigers en state-persistentie). Subagents implementeerden elke game onafhankelijk; de orchestrator integreerde ze tot één deploybare module. Deze case toont aan dat de MCP-server niet alleen single-agent workflows ondersteunt maar ook multi-agent collaboratieve ontwikkeling.
-
-De volledige orkestratieprompts en de taakverdeling van subagents zijn gedocumenteerd in [BIJLAGEVERWIJZING TBD].
+Deze architectuur werd gevalideerd op de miniGames-module (GitHub issue \#31), een complexe module die zeven skill-gebaseerde minigames bundelt met gedeelde infrastructuur. Subagents implementeerden elke game onafhankelijk; de orchestrator integreerde ze tot één deploybare module, waarmee werd aangetoond dat de MCP-server ook multi-agent collaboratieve ontwikkeling ondersteunt. De volledige orkestratieprompts en taakverdeling zijn gedocumenteerd in bijlage~\ref{ch:onderzoeksvoorstel}.
 
 \subsection{Modelcomparison}
 \label{subsec:modellen}
@@ -123,7 +122,7 @@ De validatie werd uitgevoerd over meerdere LLM-modellen om na te gaan of de effe
     \item \textbf{Qwen 3.5 7B} (lokaal, open-source) — [resultaten TBD]
 \end{itemize}
 
-De opname van een lokaal gehost open-sourcemodel test of de MCP-server toegankelijk is voor gebruikers zonder commerciële API-toegang. Resultaten voor alle modelcomparisons worden gepresenteerd in hoofdstuk [RESULTATENVERWIJZING TBD]. Het methodologisch kader wordt hier gedocumenteerd om het evaluatieraamwerk vast te leggen; kwantitatieve bevindingen worden toegevoegd na afronding van de resterende testruns.
+De opname van een lokaal gehost open-sourcemodel test of de MCP-server toegankelijk is zonder commerciële API-toegang. Kwantitatieve resultaten worden gepresenteerd in de conclusie.
 
 \subsection{Meetwaarden}
 \label{subsec:meetwaarden}
@@ -161,8 +160,6 @@ Om onafhankelijke replicatie mogelijk te maken, zijn de volgende materialen gedo
     \item De specifieke modelversie-identificatoren per testronde
     \item De Takaro-omgevingsconfiguratie (game servertype, vooraf geïnstalleerde modules, domaininstellingen)
 \end{itemize}
-
-[BIJLAGEVERWIJZING TBD]
 
 \section{Beperkingen}
 \label{sec:beperkingen}

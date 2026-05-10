@@ -7,11 +7,9 @@
 
 
 
-
-
-In de snel evoluerende wereld van Artificiele Intelegentie (AI) Large Language Models (LLM’s) worden steeds nieuwe manieren onderzocht hoe deze tools ingezet kunnen worden om bedrijven een voorsprong te geven op hun competitie. Om LLM’s op een effectieve manier toe te passen hebben ze casespecifieke data nodig, deze data kan op verschillende manieren aangeleverd worden, bijvoorbeeld met behulp van RAG of Vectorsearch, via een aangepaste application programming interface (api), externe databases, etc. 
-Om al deze verschillende databronnen te laten interageren met één specifieke LLM zou er een aangepast framework opgezet moeten worden, indien men naar een ander model wil overschakelen zou dit framework gedeeltelijk of volledig herwerkt moeten worden.\autocite{Sekar2026MCP} Binnenin een snel evoluerend AI-landschap, waar frequent nieuwe modellen verschijnen die het oude overtreffen, vormt dit een aanzienlijke beperking. Model context protocol (MCP) lost dit probleem op door een universele standaard op te zetten die kan intrageren met eender welk model, waardoor het veranderen van modellen snel en simpel kan gebeuren.
-Het inzetten van LLM’s om te coderen is geen nieuw concept, coding agents bestaan reeds en presteren degelijk op bestaande benchmarks \autocite{scale_swebench_pro}. Onderzoek heeft echter aangetoond dat deze coding agents beduidend minder goed presteren wanneer zij worden ingezet op bestaande, complexe codebases zonder bijkomende context. Copilot, Cursor, Claude en gelijkaardige systemen lossen dit probleem op door relevante codefragmenten, repository-structuur en aanvullende projectcontext dynamisch te extraheren en mee te geven binnen de prompt van het model, vaak via embedding-gebaseerde retrievalmechanismen.
+In de snel evoluerende wereld van Artificiele Intelegentie (AI) en Large Language Models (LLM’s) worden steeds nieuwe manieren onderzocht hoe deze tools ingezet kunnen worden om bedrijven een voorsprong te geven op hun competitie. Om LLM’s op een effectieve manier toe te passen hebben ze casespecifieke data nodig, deze data kan op verschillende manieren aangeleverd worden, bijvoorbeeld met behulp van RAG of Vectorsearch, via een aangepaste application programming interface (api), externe databases, etc. 
+Om al deze verschillende databronnen te laten interageren met één specifieke LLM zou er een aangepast framework opgezet moeten worden, indien men naar een ander model wil overschakelen zou dit framework gedeeltelijk of volledig herwerkt moeten worden.\cite{Sekar2026MCP} Binnenin een snel evoluerend AI-landschap, waar frequent nieuwe modellen verschijnen die het oude overtreffen, vormt dit een aanzienlijke beperking. Model context protocol (MCP) lost dit probleem op door een universele standaard op te zetten die kan intrageren met eender welk model, waardoor het veranderen van modellen snel en simpel kan gebeuren.
+Het inzetten van LLM’s om te coderen is geen nieuw concept, coding agents bestaan reeds en presteren degelijk op bestaande benchmarks \cite{scale_swebench_pro}. Onderzoek heeft echter aangetoond dat deze coding agents beduidend minder goed presteren wanneer zij worden ingezet op bestaande, complexe codebases zonder bijkomende context. Copilot, Cursor, Claude en gelijkaardige systemen lossen dit probleem op door relevante codefragmenten, repository-structuur en aanvullende projectcontext dynamisch te extraheren en mee te geven binnen de prompt van het model, vaak via embedding-gebaseerde retrievalmechanismen.
 Door het benutten van MCP kunnen deze agents mogelijks ingezet worden binnen domeinspecifieke context, zo wil Takaro.io (een gameserver management platform) hun platform toegankelijker maken door een coding agent toe te voegen die gebruikmakend van hun api en documentatie de mogelijk biedt tot het beter beheren van gameservers. 
 MCP, werkt op basis van context, hierbij wordt metadata van de tools en hun functies  meegegeven binnen elke chatbeurt. De uitgebreide api van Takaro.io zorgt hierbij voor problemen doordat de hoeveelheid data een groot deel van de context window van de agent in beslag neemt. De veiligheidsrisico’s die MCP met zich meeneemt worden ook in kaart genomen authorisatie en authenticatie, promt poisioning, etc. Om de  MCP ondersteunde coding agent tot leven te brengen moeten volgende deelvragen beantwoord worden:
 
@@ -29,10 +27,10 @@ In de literatuurstudie zullen verschillende technieken onderzocht worden die erv
 
 De rest van deze bachelorproef is als volgt opgebouwd:
 
-In Hoofdstuk \ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein, op basis van een literatuurstudie.
+In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein, op basis van een literatuurstudie.
 
-In Hoofdstuk \ref{ch:methodologie} wordt de methodologie toegelicht en worden de gebruikte onderzoekstechnieken besproken om een antwoord te kunnen formuleren op de onderzoeksvragen.
+In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht en worden de gebruikte onderzoekstechnieken besproken om een antwoord te kunnen formuleren op de onderzoeksvragen.
 
 % TODO: Vul hier aan voor je eigen hoofstukken, één of twee zinnen per hoofdstuk
 
-In Hoofdstuk \ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.
+In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.
