@@ -5,32 +5,34 @@
 \chapter{\IfLanguageName{dutch}{Inleiding}{Introduction}}%
 \label{ch:inleiding}
 
+Softwareontwikkelaars delegeren steeds vaker routinetaken aan AI:\@ van het genereren van boilerplate tot het debuggen van complexe logica. Die verschuiving roept een fundamentele vraag op: tot hoever reikt de autonomie van een AI-agent wanneer hij niet alleen schrijft, maar ook uitvoert? Het inzetten van LLM-gebaseerde systemen die zelfstandig code schrijven, testen en uitvoeren namelijk, \textit{codeeragents}, zijn daarbij geen toekomstvisie meer. Hoewel deze agents meetbare resultaten behalen op gestandaardiseerde benchmarks~\cite{scale_swebench_pro}, stuit hun praktische inzet op een reeks concrete uitdagingen.
 
+Om LLM's bruikbaar in te zetten in domeinspecifieke scenario's  hebben ze toegang nodig tot relevante context: API-documentatie, codestructuur, platformspecifieke kennis en toolinterfaces. Traditioneel wordt deze context ad hoc samengesteld per model of per toepassing, wat leidt tot fragiele integraties die bij elke modelwissel herwerkt moeten worden~\cite{Sekar2026MCP}. In een landschap waar regelmatig nieuwe modellen beschikbaar komen, vormt dit een concrete beperking. Het Model Context Protocol (MCP) biedt hiervoor een oplossing door een universele, modelonafhankelijke standaard te definiëren voor de communicatie tussen LLM's en externe tools of databronnen. MCP werkt op basis van gestructureerde tooldefinities die bij elke interactie als context worden meegegeven aan het model, waardoor van model wisselen mogelijk wordt zonder de volledige integratie te herwerken.
 
-In de snel evoluerende wereld van Artificiele Intelegentie (AI) en Large Language Models (LLM’s) worden steeds nieuwe manieren onderzocht hoe deze tools ingezet kunnen worden om bedrijven een voorsprong te geven op hun competitie. Om LLM’s op een effectieve manier toe te passen hebben ze casespecifieke data nodig, deze data kan op verschillende manieren aangeleverd worden, bijvoorbeeld met behulp van RAG of Vectorsearch, via een aangepaste application programming interface (api), externe databases, etc. 
-Om al deze verschillende databronnen te laten interageren met één specifieke LLM zou er een aangepast framework opgezet moeten worden, indien men naar een ander model wil overschakelen zou dit framework gedeeltelijk of volledig herwerkt moeten worden.\cite{Sekar2026MCP} Binnenin een snel evoluerend AI-landschap, waar frequent nieuwe modellen verschijnen die het oude overtreffen, vormt dit een aanzienlijke beperking. Model context protocol (MCP) lost dit probleem op door een universele standaard op te zetten die kan intrageren met eender welk model, waardoor het veranderen van modellen snel en simpel kan gebeuren.
-Het inzetten van LLM’s om te coderen is geen nieuw concept, coding agents bestaan reeds en presteren degelijk op bestaande benchmarks \cite{scale_swebench_pro}. Onderzoek heeft echter aangetoond dat deze coding agents beduidend minder goed presteren wanneer zij worden ingezet op bestaande, complexe codebases zonder bijkomende context. Copilot, Cursor, Claude en gelijkaardige systemen lossen dit probleem op door relevante codefragmenten, repository-structuur en aanvullende projectcontext dynamisch te extraheren en mee te geven binnen de prompt van het model, vaak via embedding-gebaseerde retrievalmechanismen.
-Door het benutten van MCP kunnen deze agents mogelijks ingezet worden binnen domeinspecifieke context, zo wil Takaro.io (een gameserver management platform) hun platform toegankelijker maken door een coding agent toe te voegen die gebruikmakend van hun api en documentatie de mogelijk biedt tot het beter beheren van gameservers. 
-MCP, werkt op basis van context, hierbij wordt metadata van de tools en hun functies  meegegeven binnen elke chatbeurt. De uitgebreide api van Takaro.io zorgt hierbij voor problemen doordat de hoeveelheid data een groot deel van de context window van de agent in beslag neemt. De veiligheidsrisico’s die MCP met zich meeneemt worden ook in kaart genomen authorisatie en authenticatie, promt poisioning, etc. Om de  MCP ondersteunde coding agent tot leven te brengen moeten volgende deelvragen beantwoord worden:
+MCP introduceert echter ook nieuwe uitdagingen. Tooldefinities en bijbehorende metadata beperken het beschikbare contextvenster voor de eigenlijke taak. Bij platformen met een uitgebreide API kan dit ertoe leiden dat het model de beschikbare ruimte onvolledig benut of relevante instructies negeert. Daarnaast stelt de inzet van een codeeragent met schrijftoegang tot een live platform bijkomende eisen aan toolvalidatie en foutafhandeling. Takaro.io, een gameserver management platform, wenst zijn platform toegankelijker te maken door gebruikers via een MCP-gebaseerde codeeragent te ondersteunen bij het ontwikkelen van gameserver-modules. Dit vormt de concrete toepassingscontext van dit onderzoek.
+
+Dit onderzoek heeft als doel een MCP-server te ontwerpen en evalueren die via gestructureerde toolcalls in staat is correcte, functioneel werkende Takaro-modules te genereren. Daarbij wordt onderzocht hoe de interactie tussen de MCP-server, de uitgevoerde toolcalls en de uiteindelijke codegeneratie gestructureerd kan worden, en hoe de werking van de gegenereerde modules gevalideerd kan worden.
+
+Bij de aanvang van dit onderzoek werd verondersteld dat de tooldefinities in de MCP-server konden fungeren als impliciete API-documentatie. De verwachting was dat goed gedefinieerde tooldescripties en parameterschema's de agent voldoende API-kennis zouden verschaffen om correcte code te genereren, zonder dat aanvullende documentatie expliciet in de prompt opgenomen moest worden. Deze veronderstelling bleek al vroeg in het onderzoek onjuist: de tooldefinities alleen bleken onvoldoende om de agent te sturen naar correcte API-interacties.
+
+De centrale onderzoeksvraag van deze bachelorproef luidt:
+
+\begin{quote}
+  \textit{Hoe kan een MCP-gebaseerde multi-agentarchitectuur worden ontworpen en geëvalueerd voor tool-geassisteerde codegeneratie binnen game server management?}
+\end{quote}
+
+Om deze vraag te beantwoorden worden de volgende deelvragen onderzocht:
 
 \begin{itemize}
-  \item Hoe kan de uitgebreide api met zijn documentatie in combinatie met MCP server op een token bewuste manier opgesteld worden?
-  \item Welke veiligheidsrisicos zijn er wanneer we een coding agent rechtstreekt toegang geven tot de api endpoints en hoe kunnen we deze voorkomen?
-  \item verantwoording van het onderwerp, methodologie
-  \item Hoe kan de correctheid van de gegenereerde codefragmenten geëvalueerd worden?
+  \item In welke mate vermindert MCP de nood aan expliciete API-context binnen een codeeragent?
+  \item Welke uitdagingen ontstaan bij contextbeheer binnen complexe codeertaken?
+  \item Welke beperkingen hebben codeeragents bij interactie met complexe API's?
+  \item Welke rol spelen toolinterfaces en validatie binnen agent-ondersteund coderen?
+  \item Hoe beïnvloedt de keuze van de MCP-transportlaag de deploymentflexibiliteit van een codeeragent?
+  \item Hoe beïnvloedt contextisolatie via subagents de beheersbaarheid van complexe codeertaken?
+  \item Welke rol speelt observability en tracing binnen de evaluatie van agentgedrag?
 \end{itemize}
 
-In de literatuurstudie zullen verschillende technieken onderzocht worden die ervoor zorgen dat de context window optimaal benut wordt. Verder zullen de veiligheidsrisico’s worden geanalyseerd en zal worden onderzocht in welke mate deze verschillen van traditionele API-gerelateerde risico’s.
-% Het is gebruikelijk aan het einde van de inleiding een overzicht te
-% geven van de opbouw van de rest van de tekst. Deze sectie bevat al een aanzet
-% die je kan aanvullen/aanpassen in functie van je eigen tekst.
+Dit onderzoek is een proof-of-concept en wordt uitgevoerd binnen een gecontroleerde omgeving. De codeeragent is uitsluitend gericht op gebruikers die hun eigen Takaro-instantie beheren en daarop modules willen ontwikkelen. Het gaat dus niet om een publiek multi-tenant SaaS-platform waarbij meerdere onbekende gebruikers gelijktijdig van de agent gebruik maken. De uitvoerbare acties van de agent zijn beperkt en hardgecodeerd via een vaste, gevalideerde toolset. Beveiligingsaspecten die eigen zijn aan een publiek platform, zoals autorisatiebeheer tussen tenants of rate limiting op multigebruikersniveau, vallen buiten de scope van dit onderzoek.
 
-De rest van deze bachelorproef is als volgt opgebouwd:
-
-In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein, op basis van een literatuurstudie.
-
-In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht en worden de gebruikte onderzoekstechnieken besproken om een antwoord te kunnen formuleren op de onderzoeksvragen.
-
-% TODO: Vul hier aan voor je eigen hoofstukken, één of twee zinnen per hoofdstuk
-
-In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.
+De rest van deze bachelorproef is als volgt opgebouwd. In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein. De literatuurstudie behandelt MCP als protocol, de werking en beperkingen van codeeragents, en technieken voor contextbeheer. In Hoofdstuk~\ref{ch:methodologie} worden de gebruikte onderzoekstechnieken besproken: de opzet van de MCP-server, de agentarchitectuur en het evaluatiekader. In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen, met een aanzet voor toekomstig onderzoek.

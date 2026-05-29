@@ -1,0 +1,21 @@
+\chapter{Systeemarchitectuur en werkstroomdiagrammen}\label{app:architectuur}
+
+Figuur~\ref{fig:takaro-mcp-loop} toont de volledige architectuur van de eval-runner en orkestratieworkflow. Het diagram illustreert hoe de eval-runner model-promptcombinaties itereert, per combinatie een Claude Code-instantie spawnt, en elke sessie via een \texttt{/eval-hint} koppelt aan de MCP-server en Langfuse voor gestructureerde tracing. De agentische lus toont de systeempromptbranching tussen standaard- en orchestratormodus, de toolcall-cyclus en de opbouw van evaluatiemetrieken.
+
+\begin{figure}[p]
+    \includegraphics[width=\textwidth]{TakaroMCPArchitecture.png}
+    \centering
+    \caption[Agentic loop en MCP]{Volledige architectuur van de eval-runner en orkestratieworkflow. De eval-runner itereert over model-promptcombinaties, spawnt per combinatie een Claude Code-instantie en koppelt elke sessie via \texttt{/eval-hint} aan de MCP-server voor gestructureerde Langfuse-tracing.}\label{fig:takaro-mcp-loop}
+\end{figure}
+
+\begin{figure}[p]
+    \includegraphics[scale=0.70]{scaffoldModule.png}
+    \centering
+    \caption[Take Action fase]{Take Action fase. Hier wordt besilst op welke manier de code voor de module gegenereert zal worden.}\label{fig:takaro-mcp-delegate}
+\end{figure}
+
+\begin{figure}[p]
+    \includegraphics[scale=0.70]{pushModule.png}
+    \centering
+    \caption[Push module workflow]{Vervolg van de take action fase. Hier word de workflow doornomen na het pushen een instaleren van een module op de takaro server.}\label{fig:takaro-mcp-push}
+\end{figure}

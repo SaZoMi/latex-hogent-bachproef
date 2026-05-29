@@ -1,0 +1,28 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{registerEvalHint}\PYG{p}{(}
+\PYG{+w}{  }\PYG{n+nx}{langfuseSessionId}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{,}
+\PYG{+w}{  }\PYG{n+nx}{model}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{,}
+\PYG{+w}{  }\PYG{n+nx}{promptName}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{,}
+\PYG{+w}{  }\PYG{k+kr}{module}\PYG{n+nx}{Name}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{,}
+\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{o+ow}{void}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k}{try}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{res}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{await}\PYG{+w}{ }\PYG{n+nx}{fetch}\PYG{p}{(}\PYG{l+s+sb}{`http://localhost:}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nx}{PORT}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+sb}{/eval\PYGZhy{}hint`}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n+nx}{method}\PYG{o}{:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}POST\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nx}{headers}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}Content\PYGZhy{}Type\PYGZsq{}}\PYG{o}{:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}application/json\PYGZsq{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{},}
+\PYG{+w}{      }\PYG{n+nx}{body}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{JSON.stringify}\PYG{p}{(\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{langfuseSessionId}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{model}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{promptName}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kr}{module}\PYG{n+nx}{Name}\PYG{p}{,}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}),}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{});}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{ok}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n+nx}{console}\PYG{p}{.}\PYG{n+nx}{warn}\PYG{p}{(}\PYG{l+s+sb}{`  eval\PYGZhy{}hint: server returned }\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{status}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+sb}{`}\PYG{p}{);}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{catch}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nx}{err}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{console}\PYG{p}{.}\PYG{n+nx}{warn}\PYG{p}{(}\PYG{l+s+sb}{`  eval\PYGZhy{}hint: registration failed (}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nx}{err}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+sb}{) — traces will be unlinked`}\PYG{p}{);}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// In the main evaluation loop — hint is registered before spawning Claude:}
+\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{langfuseSessionId}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k+kr}{module}\PYG{n+nx}{Name}\PYG{p}{;}
+\PYG{k}{await}\PYG{+w}{ }\PYG{n+nx}{registerEvalHint}\PYG{p}{(}\PYG{n+nx}{langfuseSessionId}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{modelShort}\PYG{p}{(}\PYG{n+nx}{model}\PYG{p}{),}\PYG{+w}{ }\PYG{n+nx}{prompt}\PYG{p}{.}\PYG{n+nx}{name}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kr}{module}\PYG{n+nx}{Name}\PYG{p}{);}
+\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{rawOutput}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{await}\PYG{+w}{ }\PYG{n+nx}{runClaude}\PYG{p}{(}\PYG{n+nx}{prompt}\PYG{p}{.}\PYG{n+nx}{text}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{model}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{prompt}\PYG{p}{.}\PYG{n+nx}{name}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kr}{module}\PYG{n+nx}{Name}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kc}{true}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{orchestrator}\PYG{p}{);}
+\end{MintedVerbatim}

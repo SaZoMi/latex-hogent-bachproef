@@ -1,0 +1,204 @@
+%%=============================================================================
+%% Resultaten
+%%=============================================================================
+
+\chapter{Resultaten}\label{ch:resultaten}
+
+Dit hoofdstuk presenteert de resultaten van de empirische evaluatie beschreven in sectie~\ref{sec:fase4}. Alle 33 runs — elf modules over drie modellen — werden succesvol afgerond: de gegenereerde module werd telkens gedeployed, geïnstalleerd en functioneel gevalideerd op de game server. Het bewijs van concept is daarmee aangetoond. De nadruk in dit hoofdstuk ligt op de kwalitatieve verschillen tussen de modellen en de patronen die uit de meetwaarden naar voren komen.
+
+\section{Succespercentages en zero-shot prestaties}\label{sec:resultaten-succes}
+
+Tabel~\ref{tab:succes-model} geeft een overzicht van de kernmeetwaarden per model. Alle drie de modellen bereikten een succespercentage van 100\%, maar de weg daar naartoe verschilt sterk.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Model} & \textbf{Succes} & \textbf{Zero-shot} & \textbf{Gem. shots} & \textbf{Gem. fouten} & \textbf{Gem. duur (s)} \\
+\midrule
+Claude Haiku  & 11/11 & 8/11  & 2,45 & 1,82 & 174 \\
+Claude Sonnet & 11/11 & 7/11  & 1,09 & 0,09 & 297 \\
+Claude Opus   & 11/11 & 11/11 & 1,00 & 0,00 & 191 \\
+\bottomrule
+\end{tabular}
+\caption[Succesmeetwaarden per model]{Succesmeetwaarden per model over 11 modules. Zero-shot geeft het aantal modules waarbij de eerste push direct functioneel was.}\label{tab:succes-model}
+\end{table}
+
+Opus is het enige model dat bij elke module zero-shot slaagde: de gegenereerde code was telkens correct bij de eerste poging, zonder enige zelfcorrectie. Sonnet slaagde zero-shot bij 7 van de 11 modules en had gemiddeld slechts 0,09 fouten per run. Haiku slaagde uiteindelijk bij alle modules, maar vereiste gemiddeld 2,45 correctiepogingen en produceerde gemiddeld 1,82 toolfouten per run. Figuur~\ref{fig:succes-zeroshot} visualiseert dit verschil.
+
+\begin{figure}[h!]
+    \includegraphics[width=0.75\textwidth]{fig_succes_zeroshot.png}
+    \centering
+    \caption[Succes en zero-shot succes per model]{Totaal succes versus zero-shot succes per model over 11 modules.}\label{fig:succes-zeroshot}
+\end{figure}
+
+Figuur~\ref{fig:shot-distribution} toont de verdeling van correctiepogingen: Opus slaagde bij alle modules in exact één poging. Sonnet had bij één module twee pogingen nodig. Haiku vertoont de breedste spreiding, met meerdere modules die drie of meer pogingen vereisten.
+
+\begin{figure}[h!]
+    \includegraphics[width=0.75\textwidth]{fig_shot_distribution.png}
+    \centering
+    \caption[Verdeling correctiepogingen per model]{Verdeling van het aantal correctiepogingen per model. Waarde 1 = zero-shot succes.}\label{fig:shot-distribution}
+\end{figure}
+
+\section{Prestaties per module}\label{sec:resultaten-modules}
+
+Tabel~\ref{tab:shots-module} toont per module het aantal correctiepogingen (shots) per model. Een shot-waarde van 1 betekent dat de module bij de eerste push functioneerde; hogere waarden duiden op herhaalde fix-deploy-test-cycli. Figuur~\ref{fig:shots-heatmap} geeft dezelfde data als heatmap, waarbij de kleurintensiteit de correctielast weergeeft.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Module} & \textbf{Haiku} & \textbf{Sonnet} & \textbf{Opus} \\
+\midrule
+AFKchecker        & 1 & 2 & 1 \\
+BannedItems       & 1 & 1 & 1 \\
+BuffManager       & 6 & 1 & 1 \\
+ChatBridge        & 2 & 1 & 1 \\
+EconomyUtils      & 1 & 1 & 1 \\
+GeneralStockMarket& 2 & 1 & 1 \\
+HighPingKicker    & 2 & 1 & 1 \\
+LobbyAndBack      & 1 & 1 & 1 \\
+MiniGames         & 9 & 1 & 1 \\
+ServerMessages    & 1 & 1 & 1 \\
+Whitelisting      & 1 & 1 & 1 \\
+\bottomrule
+\end{tabular}
+\caption[Aantal correctiepogingen (shots) per module per model]{Aantal correctiepogingen per module per model. Waarde 1 = zero-shot succes.}\label{tab:shots-module}
+\end{table}
+
+\begin{figure}[h!]
+    \includegraphics[width=0.80\textwidth]{fig_shots_heatmap.png}
+    \centering
+    \caption[Heatmap correctiepogingen per module en model]{Heatmap van het aantal correctiepogingen per module en model. Donkerder = meer pogingen nodig.}\label{fig:shots-heatmap}
+\end{figure}
+
+Voor Sonnet en Opus zijn de afwijkingen minimaal. Haiku vertoont twee uitschieters: BuffManager (6 shots) en MiniGames (9 shots). Beide modules zijn complexer dan gemiddeld — BuffManager bevat meerdere commando's met gedeelde state, MiniGames bundelt zeven onafhankelijke minigames. Figuur~\ref{fig:errors} toont het gemiddeld aantal toolfouten per model, wat dit patroon ondersteunt: Haiku produceert veruit de meeste fouten, terwijl Opus geen enkele toolfout registreerde.
+
+\begin{figure}[h!]
+    \includegraphics[width=0.65\textwidth]{fig_errors.png}
+    \centering
+    \caption[Gemiddeld aantal toolfouten per model]{Gemiddeld aantal toolfouten per run per model. Punten stellen individuele runs voor.}\label{fig:errors}
+\end{figure}
+
+\section{Kosten en efficiëntie}\label{sec:resultaten-kosten}
+
+Tabel~\ref{tab:kosten-model} vergelijkt de totale kosten en tokenverbruik per model over alle 11 runs. Figuur~\ref{fig:kosten} visualiseert zowel de totale kost als de spreiding van de per-run kosten.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Model} & \textbf{Totale kost} & \textbf{Gem. tokens/run} & \textbf{Gem. kost/run} & \textbf{Gem. regelcode} \\
+\midrule
+Claude Haiku  & \$4,65  & 1.897.935 & \$0,42 & 426 \\
+Claude Sonnet & \$12,33 & 1.711.527 & \$1,12 & 182 \\
+Claude Opus   & \$14,95 & 1.220.226 & \$1,36 & 217 \\
+\bottomrule
+\end{tabular}
+\caption[Kosten en tokenverbruik per model]{Totale kosten, gemiddeld tokenverbruik en gemiddeld aantal gegenereerde coderegels per model over 11 runs.}\label{tab:kosten-model}
+\end{table}
+
+\begin{figure}[h!]
+    \includegraphics[width=\textwidth]{fig_kosten.png}
+    \centering
+    \caption[Kostenvergelijking per model]{Links: totale kost over 11 modules. Rechts: kostenspreiding per individuele run.}\label{fig:kosten}
+\end{figure}
+
+Haiku is driemaal goedkoper per run dan Opus, maar verbruikt paradoxaal genoeg meer tokens. Dit is te verklaren door de herhaalde correctiecycli: elke fix-poging voegt toolresultaten en gegenereerde code toe aan de conversatiegeschiedenis, wat het totale tokenverbruik opdrijft. Figuur~\ref{fig:tokens} toont de tokenopbouw per model. Het cache-leesaandeel domineert bij alle modellen — de promptcache-hit ratio benadert 100\% — wat bevestigt dat de MCP-resources (modulesjablonen, API-documentatie) effectief gecached worden en bij elke toolaanroep hergebruikt worden zonder herberekening.
+
+\begin{figure}[h!]
+    \includegraphics[width=0.85\textwidth]{fig_tokens.png}
+    \centering
+    \caption[Tokenopbouw per model]{Gemiddeld tokenverbruik per run opgesplitst naar type: nieuwe invoertokens, cache-leestokens, redeneerblokken en antwoordtokens.}\label{fig:tokens}
+\end{figure}
+
+Haiku genereert ook gemiddeld bijna tweemaal zoveel coderegels als Sonnet of Opus, wat Figuur~\ref{fig:loc} illustreert. Dit wijst op minder efficiënte codegeneratie eerder dan op kwalitatief betere output: meer code leidt bij Haiku tot meer fouten, niet tot betere modules.
+
+\begin{figure}[h!]
+    \includegraphics[width=0.65\textwidth]{fig_loc.png}
+    \centering
+    \caption[Gegenereerde codeomvang per model]{Spreiding van het aantal gegenereerde coderegels per model. De uitschieters bij Haiku corresponderen met de BuffManager- en MiniGames-modules.}\label{fig:loc}
+\end{figure}
+
+Figuur~\ref{fig:cost-complexity} toont de relatie tussen modulecomplexiteit en kost. Voor Opus en Sonnet is er een duidelijke positieve correlatie: complexere modules kosten meer, maar de toename is beheersbaar. Bij Haiku is de relatie grilliger door de onvoorspelbare correctielast.
+
+\begin{figure}[h!]
+    \includegraphics[width=0.75\textwidth]{fig_cost_complexity.png}
+    \centering
+    \caption[Kost versus modulecomplexiteit]{Relatie tussen het aantal componenttypes van een module en de uitvoeringskosten per model.}\label{fig:cost-complexity}
+\end{figure}
+
+Figuur~\ref{fig:correction-cost} bevestigt dat zelfcorrecties de kostdriver zijn bij Haiku: hoe meer correctiepogingen, hoe hoger de kost. Bij Sonnet en Opus ontbreekt deze relatie vrijwel volledig.
+
+\begin{figure}[h!]
+    \includegraphics[width=0.65\textwidth]{fig_correction_cost.png}
+    \centering
+    \caption[Relatie zelfcorrecties en kost]{Relatie tussen het aantal zelfcorrecties en de uitvoeringskosten per run per model.}\label{fig:correction-cost}
+\end{figure}
+
+\section{Casus: MiniGames en de orchestratorarchitectuur}\label{sec:resultaten-minigames}
+
+De MiniGames-module (GitHub issue \#31) vormt de meest informatieve testcase: zeven onafhankelijke minigames in één module, opgebouwd via de orchestratorarchitectuur beschreven in sectie~\ref{subsubsec:multiagent-ontwerp}. Tabel~\ref{tab:minigames} toont de uitvoeringsdetails.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Model} & \textbf{Shots} & \textbf{Turns} & \textbf{Tools} & \textbf{Regelcode} & \textbf{Kost} \\
+\midrule
+Claude Haiku  & 9 & 43 & 131 & 2.258 & \$1,62 \\
+Claude Sonnet & 1 & 28 & 39  & 82   & \$2,98 \\
+Claude Opus   & 1 & 57 & 56  & 601  & \$2,97 \\
+\bottomrule
+\end{tabular}
+\caption[MiniGames-module: uitvoeringsdetails per model]{Uitvoeringsdetails voor de MiniGames-module. Shots = correctiepogingen, Tools = totaal aantal toolaanroepen.}\label{tab:minigames}
+\end{table}
+
+Sonnet en Opus losten de MiniGames-module elk op in één poging. Haiku vereiste negen correctiepogingen, gebruikte meer dan drie keer zoveel toolaanroepen en genereerde bijna vier keer zoveel coderegels als Opus. Dit duidt erop dat Haiku de orchestratorinstructies minder nauwkeurig uitvoert en vaker onjuiste API-aanroepen produceert die de fix-loop activeren. Figuur~\ref{fig:duration} toont de uitvoeringstijden over alle modules: Sonnet is consistent het traagst, terwijl Haiku en Opus vergelijkbare medianen hebben maar Haiku een bredere spreiding vertoont door de variabele correctielast.
+
+\begin{figure}[h!]
+    \includegraphics[width=0.65\textwidth]{fig_duration.png}
+    \centering
+    \caption[Uitvoeringstijd per model]{Spreiding van de uitvoeringstijd per model over alle 11 modules.}\label{fig:duration}
+\end{figure}
+
+\section{Toolgebruik}\label{sec:resultaten-tools}
+
+Tabel~\ref{tab:tools} toont de tien meest gebruikte MCP-tools over alle 33 runs gecombineerd. Figuur~\ref{fig:tools-top10} geeft dezelfde data als horizontale staafdiagram.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Tool} & \textbf{Totaal aanroepen} \\
+\midrule
+\texttt{write\_module\_file}   & 153 \\
+\texttt{ReadMcpResourceTool}   & 140 \\
+\texttt{ToolSearch}            & 109 \\
+\texttt{manage\_roles}         & 94  \\
+\texttt{bot\_action}           & 66  \\
+\texttt{poll\_events}          & 66  \\
+\texttt{trigger\_command}      & 62  \\
+\texttt{push\_module}          & 51  \\
+\texttt{Bash}                  & 44  \\
+\texttt{write\_module\_json}   & 42  \\
+\bottomrule
+\end{tabular}
+\caption[Meest gebruikte MCP-tools over alle runs]{Tien meest gebruikte MCP-tools over alle 33 evaluatieruns gecombineerd.}\label{tab:tools}
+\end{table}
+
+\begin{figure}[h!]
+    \includegraphics[width=\textwidth]{fig_tools_top10.png}
+    \centering
+    \caption[Top 10 meest gebruikte MCP-tools]{Top 10 meest gebruikte MCP-tools over alle 33 evaluatieruns.}\label{fig:tools-top10}
+\end{figure}
+
+\texttt{write\_module\_file} staat bovenaan, wat verwacht is: elke module vereist meerdere bronbestanden. \texttt{ReadMcpResourceTool} staat tweede, wat bevestigt dat de agent de aangeboden resources (modulesjablonen, API-documentatie, bekende fouten) actief raadpleegt. \texttt{ToolSearch} staat derde: de agent zoekt dynamisch naar beschikbare tools in plaats van alle schema's vooraf te laden, wat het contextvensterverbruik beperkt. \texttt{Bash} verschijnt in de top tien doordat sommige modellen occasioneel Bash-aanroepen uitvoeren buiten de verwachte toolset om.
+
+Figuur~\ref{fig:tools-per-model} toont het toolgebruik per model afzonderlijk. Het patroon is consistent over de drie modellen, met één opvallend verschil: Haiku roept \texttt{write\_module\_file} veel vaker aan dan Sonnet of Opus, wat aansluit bij de hogere gemiddelde codeomvang en het hogere aantal correctiepogingen.
+
+\begin{figure}[h!]
+    \includegraphics[width=\textwidth]{fig_tools_per_model.png}
+    \centering
+    \caption[Toolgebruik per model]{Verdeling van toolaanroepen per model voor de acht meest gebruikte tools.}\label{fig:tools-per-model}
+\end{figure}

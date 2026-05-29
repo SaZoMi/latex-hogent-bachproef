@@ -4,114 +4,182 @@
 \chapter{\IfLanguageName{dutch}{Methodologie}{Methodology}}%
 \label{ch:methodologie}
 
-De methodologie volgt een \textit{design science research}-aanpak: er wordt een concreet artefact ontwikkeld — een MCP-server — en dit artefact wordt vervolgens empirisch gevalideerd. De centrale onderzoeksvraag die dit werk aanstuurt, luidt:
+Dit onderzoek volgt een \textit{design science research}-aanpak. Het centrale artefact is een MCP-server die een LLM-agent verbindt met het Takaro game server managementplatform. Het bouwen van dit artefact en het empirisch valideren ervan vormen twee complementaire activiteiten die samen de centrale onderzoeksvraag beantwoorden:
 
 \begin{quote}
-\textit{Kan een MCP-server LLM-agents te verbinden met een game server managementplatform om autonome moduleontwikkeling mogelijk te maken?}
+\textit{Hoe kan een MCP-gebaseerde multi-agentarchitectuur worden ontworpen en geëvalueerd voor tool-geassisteerde codegeneratie binnen game server management?}
 \end{quote}
 
-Het beantwoorden van deze vraag vereist twee complementaire activiteiten: het bouwen van de MCP-server en het experimenteel aantonen dat een LLM-agent daarmee autonoom Takaro-modules kan ontwikkelen, deployen en testen. Het onderzoek is opgedeeld in vier fasen.
+Het onderzoek verloopt in vier fasen. Fase 1 legt de theoretische basis via een literatuurstudie. Fase 2 analyseert de Takaro-casus en stelt de vereisten op. Fase 3 ontwerpt en implementeert de MCP-server als proof of concept. Fase 4 valideert het artefact empirisch via een gestructureerde testset over meerdere modellen.
 
-\section{Fase 1: Literatuurstudie en probleemverkenning}
-\label{sec:fase1}
+\section{Fase 1: Literatuurstudie en probleemverkenning}\label{sec:fase1}
 
-In de eerste fase wordt een gerichte literatuurstudie uitgevoerd rond Large Language Models, codegeneratie, agent-assisted coding en het Model Context Protocol. Er wordt gefocust op bestaande architecturen, beperkingen en beveiligingsrisico’s van MCP-servers, evenals op de huidige stand van zaken rond LLM-gebaseerde codegeneratie voor complexe API’s. Deze fase dient om het probleemdomein af te bakenen en onderzoekslacunes te identificeren die de verdere fasen motiveren.
+De eerste fase legt de theoretische basis voor het ontwerp en de evaluatie van de MCP-server. De literatuurstudie richt zich op vier thema’s die elk een directe rol spelen in de verdere fasen.
 
-\section{Fase 2: Analyse van de casus en requirements}
-\label{sec:fase2}
+Ten eerste worden de relevante eigenschappen van Large Language Models onderzocht: contextvensters en hun beperkingen, prompting en contextconstructie, en de werking van tool calling. Dit kader is noodzakelijk om te begrijpen welke ontwerpkeuzes de kwaliteit van de codegeneratie beïnvloeden.
 
-In de tweede fase wordt de Takaro game server management API geanalyseerd. De API-structuur, typische gebruiksscenario’s en veelvoorkomende beheertaken worden in kaart gebracht via technische documentatie en praktijkgerichte use-cases. Op basis hiervan worden functionele en niet-functionele vereisten opgesteld voor de MCP-server.
+Ten tweede worden agent- en multi-agentarchitecturen bestudeerd. De ReAct-lus, de agentische lus van Claude Code en het orchestrator-worker patroon worden geanalyseerd als conceptuele basis voor de systeemarchitectuur en de orkestratieprompts.
 
-\section{Fase 3: Ontwerp en implementatie van het proof of concept}
-\label{sec:fase3}
+Ten derde wordt het Model Context Protocol in detail onderzocht: de client- en serverarchitectuur, de transportlagen en de beperkingen van Streamable HTTP. Deze kennis stuurt de keuze van transportconfiguratie en de observability-architectuur.
 
-Op basis van de requirements uit fase 2 wordt de MCP-server ontworpen en gebouwd. De ontwerpbeslissingen omvatten de keuze van technologiestack, de abstractie van de Takaro API naar MCP-tools en de beveiligingsperimeter van de server.
+Ten vierde worden de beperkingen van tool-gebaseerde codeeragents in kaart gebracht: contextuitputting, foutpropagatie en de instabiliteit van toolselectie bij grote toolsets. Deze bevindingen motiveren de ontwerpkeuzes rond toolsetomvang, parameterschema’s en de herstellus in de systeemprompt.
 
-\subsection{Ontwikkelingsmethodologie}
-\label{subsec:ontwikkeling}
+De bevindingen van deze fase zijn uitgewerkt in hoofdstuk~\ref{ch:stand-van-zaken} en vormen de directe onderbouwing voor de ontwerp- en evaluatiebeslissingen in de volgende fasen.
 
-Omdat MCP bij aanvang van dit project een recent protocol was met beperkte precedenten, kon de vereiste toolset niet volledig vooraf worden bepaald. Er werd gekozen voor een \textbf{iteratieve, prototype-gedreven aanpak} in opeenvolgende cycli:
+\section{Fase 2: Analyse van de casus en requirements}\label{sec:fase2}
 
-\begin{enumerate}
-    \item \textbf{Workflowanalyse} — de volledige moduleontwikkelworkflow werd in kaart gebracht (scaffold $\rightarrow$ broncode schrijven $\rightarrow$ metadata bijwerken $\rightarrow$ deployen $\rightarrow$ installeren $\rightarrow$ testen $\rightarrow$ debuggen $\rightarrow$ itereren) en een minimale toolset werd afgeleid per stap.
-    \item \textbf{Implementatie} — tools werden geïmplementeerd voor de geïdentificeerde workflowstappen.
-    \item \textbf{Agenttest} — een LLM-agent kreeg een moduleontwikkelingstaak met uitsluitend de geïmplementeerde tools.
-    \item \textbf{Gapidentificatie} — ontbrekende mogelijkheden werden toegevoegd in de volgende cyclus.
-\end{enumerate}
+In de tweede fase wordt de Takaro-casus geanalyseerd om de vereisten voor de MCP-server te bepalen. De analyse omvat de structuur van het platform, de modulecomponenten die de agent moet kunnen genereren en de functionele en niet-functionele vereisten waaraan de server moet voldoen.
 
-\subsection{Technologiekeuzes}
-\label{subsec:technologie}
+\subsection{Platformanalyse}\label{subsec:platformanalyse}
 
-\subsubsection{Runtime en taal}
+Takaro is een game server managementplatform dat operators in staat stelt game servers te beheren via een gecentraliseerde webinterface en REST API. De functionaliteit is uitgebreid: spelerbeheer, economie, evenementen, messaging, rollen en permissies, shop, statistieken en modulebeheer zijn elk via afzonderlijke API-subsystemen toegankelijk.
 
-Node.js met TypeScript werd gekozen als implementatieplatform vanwege de Takaro API-client (\texttt{@takaro/apiclient}), een TypeScript-pakket automatisch gegenereerd vanuit de Takaro OpenAPI-specificatie. Een andere taal vereist het aanspreken van de volledige REST API via ruwe HTTP-calls of het onderhouden van een onofficiële wrapper, wat aanzienlijk onderhoudrisico introduceert. De \texttt{strict}-modus van TypeScript biedt bovendien compilatietijdse typecontrole voor tool-parameterschema’s.
+De volledige Takaro REST API omvat meer dan honderd endpoints, gedocumenteerd in een OpenAPI-specificatie. Een naïeve blootstelling van alle endpoints als afzonderlijke MCP-tools zou de toolselectie voor de agent sterk bemoeilijken en het contextvenster verzwaren met schema-tokens voor tools die voor moduleontwikkeling niet relevant zijn. De analyse richt zich daarom uitsluitend op de subset van endpoints die noodzakelijk zijn voor de module-ontwikkelworkflow.
 
-\subsubsection{Transportlaag}
+\subsection{Modulestructuur en componenttypes}\label{subsec:modulestructuur}
 
-HTTP-transport werd verkozen boven stdio omdat de doelstelling een herbruikbare, inzetbare server is. Stdio beperkt de server tot één lokale verbinding als subprocess van de client; HTTP laat toe dat de server onafhankelijk draait — in een Docker-container, op een remote machine, of gedeeld door meerdere clients — zonder koppeling aan de levenscyclus van de client.
+Een Takaro-module is een herbruikbare plug-in die het gedrag van een game server uitbreidt. Elke module bestaat uit een metadatabestand (\texttt{module.json}) en JavaScript-bronbestanden. De broncode wordt server-side uitgevoerd door de Takaro-runtime en heeft toegang tot het Takaro SDK voor interactie met het platform.
 
-\subsubsection{Validatie van toolparameters}
+Modules kunnen vier componenttypes bevatten:
 
-Zod werd ingezet voor runtime-validatie van alle toolparameters. Omdat toolaanroepen afkomstig zijn van een LLM-agent en niet van een getypeerde client, is validatie tijdens uitvoering noodzakelijk. Zod-schema’s vervullen een dubbele rol: ze dwingen correctheid af bij aanroep én genereren de JSON Schema-definities die via MCP aan de LLM worden aangeboden.
+\begin{itemize}
+    \item \textbf{Commands}: spelersuitgevoerde tekstcommando’s die een handler activeren (bv. \texttt{/shop}).
+    \item \textbf{Hooks}: event-gedreven handlers die reageren op platformgebeurtenissen zoals spelersverbindingen, sterfgevallen of chatberichten.
+    \item \textbf{Cronjobs}: geplande taken die periodiek worden uitgevoerd op basis van een cron-expressie.
+    \item \textbf{Functions}: herbruikbare hulpfuncties die door andere componenten worden aangeroepen.
+\end{itemize}
 
-\subsubsection{Deployment}
+De agent moet voor elk componenttype correcte JavaScript-code genereren die voldoet aan de Takaro SDK-conventies, en de bijbehorende metadata correct definiëren in \texttt{module.json}.
 
-Docker en Docker Compose verpakken de server voor consistente uitvoering over omgevingen heen, zonder vereiste van een lokale Node.js-installatie. Poort en moduledirectory zijn configureerbaar via omgevingsvariabelen.
+\subsection{Functionele vereisten}\label{subsec:functionele-vereisten}
 
-\subsection{Toolabstractieontwerp}
-\label{subsec:toolontwerp}
-
-Een centrale ontwerpbeslissing was de mapping van de Takaro REST API naar MCP-tools. Een naïeve één-op-één-mapping zou meer dan honderd tools opleveren, wat de toolselectie voor de LLM-agent bemoeilijkt. Tools werden daarom geaggregeerd volgens twee regels:
+Op basis van de platformanalyse en modulestructuur worden de volgende functionele vereisten opgesteld voor de MCP-server:
 
 \begin{enumerate}
-    \item \textbf{Scope} — endpoints die tot hetzelfde functionele subsysteem behoren (spelerbeheer, messaging, shop, hooks, cronjobs, enz.) worden samengebracht in één tool.
-    \item \textbf{HTTP-methode} — binnen een subsysteem worden opvragingen (GET) en mutaties of verwijderingen (POST, PUT, DELETE) uitgedrukt als afzonderlijke modi of acties binnen dezelfde tool.
+    \item De server stelt tools beschikbaar voor de volledige moduleontwikkelworkflow: scaffold, schrijven van bronbestanden, bijwerken van metadata, deployen, installeren, testen en debuggen.
+    \item De server biedt leesoperaties voor platformdata die de agent nodig heeft om correcte code te genereren: spelerslijsten, bestaande modules en event logs.
+    \item De server biedt resources aan met statische contextdata: modulesjablonen, API-documentatie en bekende fouten uit eerdere uitvoeringen.
+    \item De server ondersteunt een testinfrastructuur waarmee de agent de functionaliteit van een gegenereerde module kan verifiëren zonder handmatige tussenkomst.
 \end{enumerate}
 
-Dit resulteerde in 36 tools verdeeld over 10 functionele categorieën, waarbij elke tool overeenkomt met een developergericht concept in plaats van een API-endpoint.
+\subsection{Niet-functionele vereisten}\label{subsec:nfr}
 
-\subsection{Beveiligingsontwerp}
-\label{subsec:beveiliging}
+\begin{enumerate}
+    \item \textbf{Token-efficiëntie}: de toolset en resources worden zo ontworpen dat het contextvenster van de agent zo min mogelijk wordt belast. Documentatie wordt aangeboden als MCP-resource voor promptcaching.
+    \item \textbf{Reproduceerbaarheid}: elke evaluatierun wordt volledig geregistreerd in Langfuse, inclusief alle toolaanroepen, foutmeldingen en uitvoeringstijden.
+\end{enumerate}
 
-De voornaamste dreiging is path traversal: een LLM-agent kan via hallucinatie of prompt-injectie een bestandspad construeren dat uit de bedoelde moduledirectory ontsnapt. Alle filesystemtools valideren paden via \texttt{guardedModulePath()}, dat namen met \texttt{..}, \texttt{/} of \texttt{\textbackslash} afwijst, symlinks oplost en verifieert dat het volledig opgeloste pad binnen \texttt{MODULES\_ROOT} blijft. Het \texttt{/mcp} HTTP-endpoint implementeert geen authenticatie — een bewuste scopebeslissing voor lokale of Docker-geïsoleerde deployments, erkend als beperking in sectie~\ref{sec:beperkingen}.
+\section{Fase 3: Ontwerp en implementatie van het proof of concept}\label{sec:fase3}
 
-\section{Fase 4: Evaluatie en vergelijking}
-\label{sec:fase4}
+Op basis van de requirements uit fase 2 wordt de MCP-server ontworpen en gebouwd. Omdat MCP bij aanvang van dit project een recent protocol was met beperkte precedenten, kon de vereiste toolset niet volledig vooraf worden bepaald. De ontwikkeling verliep daarom iteratief: de moduleontwikkelworkflow werd in kaart gebracht, een minimale toolset geïmplementeerd, getest door een agent, en aangevuld op basis van geïdentificeerde tekortkomingen. Deze cyclus herhaalde zich tot de agent de volledige workflow autonoom kon uitvoeren.
+
+\subsection{Workflowanalyse}\label{subsec:workflow}
+
+De moduleontwikkelworkflow werd opgesplitst in twee fasen: een opbouwfase (scaffold, broncode schrijven, metadata samenstellen) en een validatiefase (deployen, installeren, testen, debuggen en itereren). De volledige werkstroom is visueel weergegeven in Figuren~\ref{fig:takaro-mcp-delegate} en~\ref{fig:takaro-mcp-push} in Appendix~\ref{app:architectuur}.
+
+Deze analyse leidde tot drie categorieën van benodigde tooloperaties: bestandssysteemoperaties voor de opbouwfase, platform-API-operaties voor de deploymentfase, en testinfrastructuuroperaties voor de validatiefase. Elke categorie definieert een afzonderlijke groep MCP-tools, waarvan het concrete abstractieontwerp wordt beschreven in sectie~\ref{subsec:toolontwerp}.
+
+\subsection{Architectuurontwerp}\label{subsec:architectuur}
+
+\subsubsection{Systeemarchitectuur}
+
+Het systeem bestaat uit drie hoofdcomponenten~\ref{fig:takaro-mcp-loop}. De \textbf{Takaro MCP-server} is het centrale artefact van dit onderzoek: een HTTP-server die MCP-tools, resources en prompts aanbiedt aan verbonden clients. De \textbf{codeeragent} is een Claude Code-instantie die via het MCP-protocol toolaanroepen verstuurt en de moduleontwikkelworkflow uitvoert. Het \textbf{Takaro-platform} is de game server managementbackend waartegen de MCP-tools worden uitgevoerd via de \texttt{@takaro/apiclient}.
+
+Naast deze drie componenten registreert \textbf{Langfuse} alle toolaanroepen per sessie als gestructureerde traces, spans en scores voor evaluatiedoeleinden. De \textbf{eval-runner} is een apart script dat evaluatieruns orkestreert: het registreert elke sessie vooraf bij de MCP-server via een \texttt{/eval-hint}-endpoint, start een Claude Code-instantie en verwerkt de uitvoer na afloop.
+
+\subsubsection{Multi-agentarchitectuur}\label{subsubsec:multiagent-ontwerp}
+
+Voor modules met drie of meer onafhankelijke componenten werd een orchestrator-worker architectuur ontworpen. Een orchestratoragent ontvangt de volledige modulespecificatie, bepaalt per component of delegatie naar een subagent nodig is, en start voor elk onafhankelijk component een subagent via de \textit{Task}-tool van Claude Code. Elke subagent werkt in een geïsoleerd contextvenster: hij ontvangt enkel zijn componentspecificatie en de benodigde filesystemtools, schrijft de bronbestanden en retourneert een JSON-fragment. De orchestrator assembleert alle fragmenten tot een coherente \texttt{module.json} en voert daarna de standaard deploy-install-test-cyclus uit. De prompt voor de orchestrator us te vinden in \url{https://github.com/SaZoMi/Takaro-Mcp-server/blob/main/src/scripts/orchestrator-prompt.ts}
+
+Deze architectuur lost twee problemen op die bij een single-agent aanpak optreden bij complexe modules: contextuitputting door grote hoeveelheden componentcode, en het risico dat eerdere componentimplementaties de redenering voor latere componenten beïnvloeden.
+
+\subsubsection{Transportarchitectuur}\label{subsubsec:transport}
+
+Streamable HTTP werd verkozen boven stdio omdat de doelstelling een onafhankelijk inzetbare server is. Stdio koppelt de server aan de levenscyclus van één clientproces, Streamable HTTP laat toe dat de server in een Docker-container of op een remote machine draait en verbindingen van meerdere opeenvolgende agentprocessen aanvaardt.
+
+De server draait in stateful modus: bij elke MCP \texttt{initialize}-handshake wordt een \texttt{Mcp-Session-Id} toegewezen die de server gebruikt om toolaanroepen aan de juiste Langfuse-sessie te koppelen. Stateless modus was hiervoor ongeschikt: het uitschakelen van sessie-IDs zou de koppeling tussen toolaanroepen en evaluatietraces verbreken.
+
+\subsubsection{Observability-architectuur}\label{subsubsec:observability}
+
+Elke evaluatierun wordt geregistreerd in Langfuse via een gelaagde structuur. De eval-runner stuurt vóór het starten van een Claude Code-instantie een \texttt{POST /eval-hint} naar de MCP-server met een \texttt{langfuseSessionId}, het model en de promptnaam. Wanneer Claude Code verbinding maakt, koppelt de server de MCP-sessie aan deze hint. Elke toolaanroep wordt daarna door de server geaccumuleerd en na afloop van de sessie als hiërarchische trace weggeschreven naar Langfuse, met spans per fase (build, deploy, fix, cleanup) en scores voor de 31 meetwaarden beschreven in sectie~\ref{subsec:meetwaarden}.
+
+Codefragment~\ref{lst:eval-hint} toont de implementatie van de hint-registratie. De functie is best-effort: een mislukte registratie blokkeert de evaluatierun niet, maar de toolaanroepen van die sessie worden niet aan de juiste Langfuse-sessie gekoppeld.
+
+\begin{listing}[h!]
+\begin{minted}{typescript}
+async function registerEvalHint(
+  langfuseSessionId: string,
+  model: string,
+  promptName: string,
+  moduleName: string,
+): Promise<void> {
+  try {
+    const res = await fetch(`http://localhost:${PORT}/eval-hint`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        langfuseSessionId, model, promptName, moduleName,
+      }),
+    });
+    if (!res.ok) {
+      console.warn(`  eval-hint: server returned ${res.status}`);
+    }
+  } catch (err) {
+    console.warn(`  eval-hint: registration failed (${err}) — traces will be unlinked`);
+  }
+}
+
+// In the main evaluation loop — hint is registered before spawning Claude:
+const langfuseSessionId = moduleName;
+await registerEvalHint(langfuseSessionId, modelShort(model), prompt.name, moduleName);
+const rawOutput = await runClaude(prompt.text, model, prompt.name, moduleName, true, orchestrator);
+\end{minted}
+\caption[Registratie van de eval-hint vóór het starten van Claude]{Registratie van de \texttt{langfuseSessionId} bij de MCP-server vóór het starten van de Claude Code-instantie, uit \texttt{eval-runner.ts}.}
+\label{lst:eval-hint}
+\end{listing}
+
+De volledige architectuur van deze evaluatieworkflow, inclusief de agentische lus, de MCP-serversessies en de Langfuse-koppeling, is weergegeven in Appendix~\ref{app:architectuur}.
+
+\subsection{Technologiekeuzes}\label{subsec:technologie}
+
+Node.js met TypeScript werd gekozen als implementatieplatform vanwege de officiële Takaro API-client (\texttt{@takaro/apiclient}), een TypeScript-pakket automatisch gegenereerd vanuit de OpenAPI-specificatie van het platform. Een andere taal zou het aanspreken van de REST API via ruwe HTTP-calls vereisen. De \texttt{strict}-modus van TypeScript biedt bovendien compilatietijdse typecontrole voor tool-parameterschema’s, wat fouten vroegtijdig detecteert.
+
+Voor runtime-validatie van toolparameters werd Zod ingezet. Omdat toolaanroepen afkomstig zijn van een LLM-agent en niet van een getypeerde client, is validatie tijdens uitvoering noodzakelijk. Zod-schema’s vervullen daarin een dubbele rol: ze dwingen correctheid af bij aanroep én genereren de JSON Schema-definities die via MCP aan het model worden aangeboden.
+
+De server wordt verpakt via Docker en Docker Compose voor consistente uitvoering over omgevingen heen. Poort en moduledirectory zijn configureerbaar via omgevingsvariabelen.
+
+\subsection{Toolabstractieontwerp}\label{subsec:toolontwerp}
+
+Een centrale ontwerpbeslissing was de mapping van de Takaro REST API naar MCP-tools. Een naïeve één-op-één-mapping zou meer dan honderd tools opleveren, wat de toolselectie voor de agent sterk bemoeilijkt. Tools werden daarom geaggregeerd op basis van functioneel subsysteem: endpoints die tot hetzelfde domein behoren worden samengebracht in één tool, waarbij lees- en schrijfoperaties als afzonderlijke acties binnen dezelfde tool worden uitgedrukt. Dit resulteerde in 36 tools verdeeld over 10 functionele categorieën, waarbij elke tool overeenkomt met een developergericht concept in plaats van een API-endpoint.
+
+\subsection{Beveiligingsontwerp}\label{subsec:beveiliging}
+
+De voornaamste dreiging is path traversal: een LLM-agent kan via hallucinatie of prompt-injectie een bestandspad construeren dat uit de bedoelde moduledirectory ontsnapt. Alle filesystemtools valideren paden via \texttt{guardedModulePath()}, dat namen met \texttt{..}, \texttt{/} of \texttt{\textbackslash} afwijst, symlinks oplost en verifieert dat het volledig opgeloste pad binnen \texttt{MODULES\_ROOT} blijft. Het \texttt{/mcp} HTTP-endpoint implementeert geen authenticatie. Deze beslissing is bewuste scopebeslissing zoals al beschreven in de inleiding.
+
+\section{Fase 4: Evaluatie en vergelijking}\label{sec:fase4}
 
 Het gebouwde artefact wordt empirisch gevalideerd via een gestructureerde testset. De evaluatie meet functionele correctheid, zelfcorrectievermogen en prestatiekarakteristieken over meerdere modellen, en legt de resultaten vast aan de hand van reproduceerbare procedures.
 
-\subsection{Testcases}
-\label{subsec:testcases}
+\subsection{Testcases}\label{subsec:testcases}
 
 De validatieset bestaat uit \textbf{25 testcases} uit twee bronnen:
 
 \begin{itemize}
-    \item \textbf{20 module-recreaties} — bestaande, werkende Takaro-modules geselecteerd uit de referentiemodulebibliotheek. De agent kreeg de modulespecificatie en de opdracht deze zelfstandig te reproduceren met uitsluitend de MCP-tools.
+    \item \textbf{6 module-recreaties} — bestaande, werkende Takaro-modules geselecteerd uit de referentiemodulebibliotheek. De agent kreeg de modulespecificatie en de opdracht deze zelfstandig te reproduceren met uitsluitend de MCP-tools.
     \item \textbf{5 issue-gestuurde builds} — open GitHub-issues uit de \texttt{gettakaro/ai-module-writer}-repository met beschrijvingen van te bouwen modules. De agent kreeg de issuetekst en de opdracht een werkende module te produceren.
 \end{itemize}
 
 Cases werden geselecteerd via \textbf{purposive sampling} om dekking te garanderen van alle belangrijke modulecomponenttypes (commands, hooks, cronjobs, functies) en een reeks complexiteitsniveaus. Uitputtend testen van alle beschikbare modules valt buiten de scope van een proof-of-concept-evaluatie; consistente successen over representatieve cases zijn voldoende om haalbaarheid aan te tonen.
 
-\subsection{Succescriteria}
-\label{subsec:succescriteria}
+\subsection{Succescriteria}\label{subsec:succescriteria}
 
 Succes wordt gedefinieerd als \textbf{functionele equivalentie}: de door de agent geproduceerde module vertoont hetzelfde in-game gedrag als de specificatie of referentiemodule. Exacte code-identiteit is uitdrukkelijk geen vereiste. Een module wordt als geslaagd beschouwd wanneer deze gedeployed en geïnstalleerd is op een game server en het verwachte gedrag bevestigd wordt via verificatie van het event log.
 
-\subsection{Multi-agent validatiearchitectuur}
-\label{subsec:multiagent}
+\subsection{Multi-agent validatiecase}\label{subsec:multiagent}
 
-Voor complexe modules werd een \textbf{multi-agent orkestratiearchitectuur} ontworpen en ingezet als onderdeel van de validatie. Deze architectuur bestaat uit:
+De multi-agentarchitectuur beschreven in sectie~\ref{subsubsec:multiagent-ontwerp} werd gevalideerd op de miniGames-module (GitHub issue \#31): een complexe module die zeven skill-gebaseerde minigames bundelt met gedeelde infrastructuur. De orchestrator deelde de module op in zeven onafhankelijke componenttaken en delegeerde elke taak aan een afzonderlijke subagent. Na voltooiing assembleerde de orchestrator de resultaten tot één deploybare module en voerde de standaard deploy-install-test-cyclus uit. De volledige orkestratieprompts zijn gedocumenteerd in de projectrepository~\url{https://github.com/SaZoMi/takaro-mcp/tree/main/src/scripts}.
 
-\begin{itemize}
-    \item \textbf{Orchestratoragent} — ontvangt de volledige modulespecificatie, decomponeert deze in onafhankelijke deeltaken, delegeert elke taak aan een subagent en assembleert de resultaten tot een coherente finale module.
-    \item \textbf{Subagents} — elk verantwoordelijk voor de implementatie van één zelfstandig component (bv. één minigame binnen een grotere module), waarbij de MCP-filesystemtools worden gebruikt om bronbestanden te schrijven.
-    \item \textbf{Finale integratie} — de orchestrator voegt alle subagentoutputs samen, schrijft de volledige \texttt{module.json} en roept \texttt{push\_module} $\rightarrow$ \texttt{install\_module} $\rightarrow$ \texttt{poll\_events} aan om de module te deployen en te verifiëren.
-\end{itemize}
-
-Deze architectuur werd gevalideerd op de miniGames-module (GitHub issue \#31), een complexe module die zeven skill-gebaseerde minigames bundelt met gedeelde infrastructuur. Subagents implementeerden elke game onafhankelijk; de orchestrator integreerde ze tot één deploybare module, waarmee werd aangetoond dat de MCP-server ook multi-agent collaboratieve ontwikkeling ondersteunt. De volledige orkestratieprompts en taakverdeling zijn gedocumenteerd in bijlage~\ref{ch:onderzoeksvoorstel}.
-
-\subsection{Modelcomparison}
-\label{subsec:modellen}
+\subsection{Modelcomparison}\label{subsec:modellen}
 
 De validatie werd uitgevoerd over meerdere LLM-modellen om na te gaan of de effectiviteit van de MCP-server modelafhankelijk is of generaliseert over capability-niveaus. De geëvalueerde modellen zijn:
 
@@ -119,37 +187,113 @@ De validatie werd uitgevoerd over meerdere LLM-modellen om na te gaan of de effe
     \item \textbf{Claude Opus} (frontier-tier) — [resultaten TBD]
     \item \textbf{Claude Sonnet} (gebalanceerde tier) — [resultaten TBD]
     \item \textbf{Claude Haiku} (lichtgewicht tier) — [resultaten TBD]
-    \item \textbf{Qwen 3.5 7B} (lokaal, open-source) — [resultaten TBD]
 \end{itemize}
 
 De opname van een lokaal gehost open-sourcemodel test of de MCP-server toegankelijk is zonder commerciële API-toegang. Kwantitatieve resultaten worden gepresenteerd in de conclusie.
 
-\subsection{Meetwaarden}
-\label{subsec:meetwaarden}
+\subsection{Meetwaarden}\label{subsec:meetwaarden}
 
-De volgende meetwaarden worden per testcase verzameld:
+Per testrun worden 31 meetwaarden automatisch berekend en geregistreerd in Langfuse. Ze zijn gegroepeerd in vijf categorieën.
 
+\subsubsection*{Succesmeetwaarden}
+\ref{tab:meetwaarden-succes}
 \begin{table}[h]
 \centering
-\begin{tabular}{ll}
+\begin{tabular}{lp{9cm}}
 \hline
 \textbf{Meetwaarde} & \textbf{Beschrijving} \\
 \hline
-Zero-shot succesrate & Aandeel modules dat correct werkt bij de eerste deploypoging \\
-Iteratiecount & Aantal deploy-test-cycli voor de module validatie passeert \\
-Zelfcorrectiegraad & Aandeel mislukkingen waarbij de agent autonoom herstelde \\
-Tooldistributie & Frequentie van elke MCP-tool over alle testcases \\
-Latentie & End-to-end tijd van taakopdracht tot geslaagde deployment \\
-Tokenconsumptie & Totaal aantal tokens per testcase \\
-Doorvoer & Toolaanroepen per minuut tijdens actieve ontwikkelfasen \\
+\texttt{success} & 1 als de eindtoestand \textit{success} is én de laatste push-poging slaagde, anders 0 \\
+\texttt{build\_success} & 1 als de eerste \texttt{push\_module}-aanroep geen fout gaf \\
+\texttt{install\_success} & 1 als minstens één \texttt{install\_module}-aanroep slaagde \\
+\texttt{functional\_test\_passed} & 1 als \texttt{poll\_events} succes meldde, of bij modules zonder commando’s als de installatie slaagde \\
+\texttt{zero\_shot\_success} & 1 als de module bij de allereerste pushpoging correct functioneerde \\
 \hline
 \end{tabular}
-\caption{Overzicht van verzamelde meetwaarden per testcase}
-\label{tab:meetwaarden}
+\caption{Succesmeetwaarden per testcase}\label{tab:meetwaarden-succes}
 \end{table}
 
-\subsection{Reproduceerbaarheid}
-\label{subsec:reproduceerbaarheid}
+\subsubsection*{Iteratie- en foutmeetwaarden}
+\ref{tab:meetwaarden-iteratie}
+\begin{table}[h]
+\centering
+\begin{tabular}{lp{9cm}}
+\hline
+\textbf{Meetwaarde} & \textbf{Beschrijving} \\
+\hline
+\texttt{push\_attempt\_count} & Totaal aantal \texttt{push\_module}-aanroepen (proxy voor buildpogingen) \\
+\texttt{shot\_count} & Aantal correctieronden: begint op 1, verhoogt telkens de agent na een foutcluster opnieuw slaagt \\
+\texttt{self\_correction\_count} & Aantal keren dat de agent autonoom herstelde van een foutcluster (\texttt{shot\_count} $- 1$) \\
+\texttt{test\_cycle\_count} & Aantal \texttt{install\_module}-aanroepen (elke installatie is één deploy-testcyclus) \\
+\texttt{error\_count} & Totaal aantal toolaanroepen dat een fout teruggaf \\
+\texttt{error\_in\_build} & 1 als er een fout optrad vóór de eerste installatie (bouwfase) \\
+\texttt{error\_in\_install} & 1 als een \texttt{install\_module}-aanroep faalde \\
+\texttt{error\_in\_test} & 1 als een \texttt{poll\_events}-aanroep faalde \\
+\texttt{error\_recovery\_efficiency} & Verhouding fouten per zelfcorrectie (lager is beter) \\
+\hline
+\end{tabular}
+\caption{Iteratie- en foutmeetwaarden per testcase}\label{tab:meetwaarden-iteratie}
+\end{table}
+
+\subsubsection{Prestatiewaarden}
+\ref{meetwaarden-prestatie}
+\begin{table}[h]
+\centering
+\begin{tabular}{lp{9cm}}
+\hline
+\textbf{Meetwaarde} & \textbf{Beschrijving} \\
+\hline
+\texttt{duration\_ms} & End-to-end uitvoeringstijd van de volledige run in milliseconden \\
+\texttt{build\_duration\_ms} & Tijd van de eerste toolaanroep tot de eerste \texttt{push\_module} \\
+\texttt{test\_duration\_ms} & Tijd van de eerste \texttt{install\_module} tot de eerste \texttt{poll\_events}-reactie \\
+\texttt{time\_to\_first\_push\_ms} & Proportionele schatting van de tijd tot de eerste pushpoging \\
+\texttt{throughput\_tools\_per\_min} & Aantal toolaanroepen per minuut over de volledige run \\
+\texttt{num\_turns} & Aantal gespreksturns tussen agent en model \\
+\texttt{tool\_call\_count} & Totaal aantal uitgevoerde toolaanroepen \\
+\hline
+\end{tabular}
+\caption{Prestatiewaarden per testcase}\label{tab:meetwaarden-prestatie}
+\end{table}
+
+\subsubsection{Tokenmeetwaarden}
+\ref{meetwaarden-tokens}
+\begin{table}[h]
+\centering
+\begin{tabular}{lp{9cm}}
+\hline
+\textbf{Meetwaarde} & \textbf{Beschrijving} \\
+\hline
+\texttt{total\_tokens} & Som van invoer-, uitvoer- en cache-leestokens \\
+\texttt{input\_tokens} & Aantal tokens in de invoer (systeemprompt + context) \\
+\texttt{output\_tokens} & Totaal aantal door het model gegenereerde tokens \\
+\texttt{response\_tokens} & Zichtbare antwoordtokens (\texttt{output\_tokens} $-$ \texttt{reasoning\_tokens}) \\
+\texttt{reasoning\_tokens} & Geschat aantal redeneertoken uit \textit{thinking}-blokken (tekenlength $\div$ 4) \\
+\texttt{cache\_read\_tokens} & Tokens geladen uit de promptcache (geen herberekening) \\
+\texttt{cache\_creation\_tokens} & Tokens opgeslagen als nieuwe promptcache-invoer \\
+\texttt{cost\_usd} & Geschatte kosten in USD op basis van modelgebruik \\
+\hline
+\end{tabular}
+\caption{Tokenmeetwaarden per testcase}\label{tab:meetwaarden-tokens}
+
+\end{table}
+
+\subsubsection{Kwaliteitsmeetwaarden}
+\ref{meetwaarden-kwaliteit}
+\begin{table}[h]
+\centering
+\begin{tabular}{lp{9cm}}
+\hline
+\textbf{Meetwaarde} & \textbf{Beschrijving} \\
+\hline
+\texttt{lines\_of\_code} & Totaal aantal geschreven coderegels over alle bestandsschrijfoperaties \\
+\texttt{module\_complexity} & Maximum aantal componenttypes (commando’s, hooks, cronjobs, functies) gedefinieerd in één \texttt{module.json}-aanroep \\
+\texttt{tool\_distribution} & Aanroepfrequentie per MCP-tool over de volledige run \\
+\hline
+\end{tabular}
+\caption{Kwaliteitsmeetwaarden per testcase}\label{tab:meetwaarden-kwaliteit}
+\end{table}
+
+\subsection{Reproduceerbaarheid}\label{subsec:reproduceerbaarheid}
 
 Om onafhankelijke replicatie mogelijk te maken, zijn de volgende materialen gedocumenteerd:
 
@@ -161,8 +305,7 @@ Om onafhankelijke replicatie mogelijk te maken, zijn de volgende materialen gedo
     \item De Takaro-omgevingsconfiguratie (game servertype, vooraf geïnstalleerde modules, domaininstellingen)
 \end{itemize}
 
-\section{Beperkingen}
-\label{sec:beperkingen}
+\section{Beperkingen}\label{sec:beperkingen}
 
 De volgende beperkingen van deze methodologie worden erkend:
 

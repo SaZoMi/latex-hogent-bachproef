@@ -46,6 +46,7 @@
 }
 
 % Other packages not already included can be imported here
+\usepackage{xurl}
 \usepackage{longtable}
 \usepackage{booktabs}
 \setmathfont[range=\top]{Latin Modern Math}
@@ -54,7 +55,7 @@
 % TODO: Replace this with your own information
 \author{Saric Milan}
 \supervisor{Dhr. K. Mertens}
-\cosupervisor{Dhr. N. Candeale}
+\cosupervisor{Dhr. N. Candaele}
 \title%
     {Proof of concept: model context protocol onderstuende coding agent voor game server management.}
 \academicyear{\advance\year by -1 \the\year--\advance\year by 1 \the\year}
@@ -121,7 +122,6 @@
 \listoftables
 
 \listoflistings
-
 % Als je een lijst van afkortingen of termen wil toevoegen, dan hoort die
 % hier thuis. Gebruik bijvoorbeeld de ``glossaries'' package.
 % https://www.overleaf.com/learn/latex/Glossaries
@@ -148,14 +148,14 @@
 %\input{...}
 %...
 
+\input{resultaten}
 \input{conclusie}
 
 %---------- Bijlagen -----------------------------------------------------------
 
 \appendix
 
-\chapter{Onderzoeksvoorstel}
-\label{ch:onderzoeksvoorstel}
+\chapter{Onderzoeksvoorstel}\label{ch:onderzoeksvoorstel}
 
 Het onderwerp van deze bachelorproef is gebaseerd op een onderzoeksvoorstel dat vooraf werd beoordeeld door de promotor. Dat voorstel is opgenomen in deze bijlage.
 
@@ -168,11 +168,9 @@ Het onderwerp van deze bachelorproef is gebaseerd op een onderzoeksvoorstel dat 
 \input{../voorstel/voorstel-inhoud}
 
 %%---------- Andere bijlagen --------------------------------------------------
-% TODO: Voeg hier eventuele andere bijlagen toe. Bv. als je deze BP voor de
-% tweede keer indient, een overzicht van de verbeteringen t.o.v. het origineel.
-%\input{...}
+\input{bijlagen}
 
-\input{defenities}
+%\input{defenities}
 
 %%---------- Backmatter, referentielijst ---------------------------------------
 

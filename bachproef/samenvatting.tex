@@ -36,7 +36,6 @@
 \IfLanguageName{english}{%
 \selectlanguage{dutch}
 \chapter*{Samenvatting}
-\lipsum[1-4]
 \selectlanguage{english}
 }{}
 
@@ -46,4 +45,12 @@
 \chapter*{\IfLanguageName{dutch}{Samenvatting}{Abstract}}
 \addcontentsline{toc}{chapter}{\IfLanguageName{dutch}{Samenvatting}{Abstract}}
 
-\lipsum[1-4]
+Het toenemend gebruik van Large Language Models voor codegeneratie roept de vraag op in hoeverre deze modellen kunnen worden ingezet voor domeinspecifieke taken waarbij interactie met een complexe API vereist is. Game server management is zo een domein: platforms zoals Takaro.io bieden een uitgebreide REST API met meer dan honderd endpoints, maar vereisen dat ontwikkelaars diepgaande platformkennis bezitten om bruikbare modules te schrijven. Deze bachelorproef onderzoekt of een MCP-gebaseerde codeeragent deze drempel kan verlagen door het volledige ontwikkelproces, van scaffolding tot deployment en geautomatiseerde validatie, autonoom uit te voeren.
+
+De centrale onderzoeksvraag luidt: \textit{hoe kan een MCP-gebaseerde multi-agentarchitectuur worden ontworpen en geëvalueerd voor tool-geassisteerde codegeneratie binnen game server management?} Het onderzoek volgt een design science research-aanpak: er wordt een concreet artefact gebouwd en empirisch gevalideerd. Na een literatuurstudie over Large Language Models, agent-architecturen en het Model Context Protocol werd de Takaro API geanalyseerd en omgezet naar een MCP-server met 36 tools verdeeld over 10 functionele categorieën. Voor complexe modules met meerdere onafhankelijke componenten werd een orchestrator-worker architectuur ontworpen waarbij parallelle subagents elk in een geïsoleerd contextvenster opereren. Alle evaluatieruns worden geregistreerd via Langfuse met 31 kwantitatieve meetwaarden per run.
+
+De evaluatie omvatte 11 Takaro-modules over drie Claude-modellen, namelijk Haiku, Sonnet en Opus, en resulteerde in 33 succesvolle runs zonder handmatige tussenkomst. Alle gegenereerde modules werden gedeployed, geïnstalleerd en functioneel gevalideerd op de game server. Opus slaagde bij alle 11 modules in de eerste poging (zero-shot), produceerde geen enkele toolfout en had gemiddelde uitvoeringskosten van \$1,36 per run. Sonnet slaagde zero-shot bij 7 van de 11 modules met gemiddeld 0,09 fouten per run en een kostprijs van \$1,12. Haiku was driemaal goedkoper (\$0,42 per run) maar vereiste gemiddeld 2,45 correctiepogingen en 1,82 toolfouten, met uitschieters bij complexe modules. De promptcache-hit ratio benaderde 100\% bij alle modellen, wat bevestigt dat het aanbieden van API-documentatie als MCP-resource een effectieve strategie is om tokenkosten te beheersen.
+
+De initiële hypothese dat goed gedefinieerde MCP-tooldefinities impliciete API-documentatie kunnen vervangen, werd weerlegd. Tooldefinities beschrijven enkel de interface van een tool; ze geven geen informatie over semantische relaties tussen tools of de verwachte aanroepvolgorde. Expliciete documentatie als MCP-resource bleek onmisbaar, maar MCP biedt een gestructureerd mechanisme om die documentatie via promptcaching efficiënt te hergebruiken.
+
+De bevindingen tonen aan dat een MCP-gebaseerde codeeragent domeinspecifieke moduleontwikkeling autonoom kan uitvoeren, mits de toolset bewust beperkt is, de API-documentatie als resource wordt aangeboden en de agent voor complexe taken gebruik maakt van een orchestratorarchitectuur met contextisolatie per subagent. Niet de modelmaturiteit alleen, maar vooral de architecturale keuzes zijn bepalend voor de betrouwbaarheid van het systeem. De proof of concept biedt Takaro.io een concrete basis voor verdere integratie van LLM-gebaseerde moduleontwikkeling in het platform.

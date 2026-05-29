@@ -2,28 +2,51 @@
 %% Conclusie
 %%=============================================================================
 
-\chapter{Conclusie}%
-\label{ch:conclusie}
+\chapter{Conclusie}\label{ch:conclusie}
 
-% TODO: Trek een duidelijke conclusie, in de vorm van een antwoord op de
-% onderzoeksvra(a)g(en). Wat was jouw bijdrage aan het onderzoeksdomein en
-% hoe biedt dit meerwaarde aan het vakgebied/doelgroep? 
-% Reflecteer kritisch over het resultaat. In Engelse teksten wordt deze sectie
-% ``Discussion'' genoemd. Had je deze uitkomst verwacht? Zijn er zaken die nog
-% niet duidelijk zijn?
-% Heeft het onderzoek geleid tot nieuwe vragen die uitnodigen tot verder 
-%onderzoek?
+\section{Antwoord op de centrale onderzoeksvraag}
 
-Deze bachelorproef heeft als doel het ontwikkelen en evalueren van een proof of concept van een MCP-ondersteunde coding agent voor game server management. Op basis van de literatuurstudie en de gekozen onderzoeksopzet wordt verwacht dat het gebruik van MCP als structurele ondersteuningslaag bijdraagt aan een verhoogde correctheid en herbruikbaarheid van door een LLM gegenereerde codefragmenten.
+De centrale onderzoeksvraag luidde: \textit{hoe kan een MCP-gebaseerde multi-agentarchitectuur worden ontworpen en geëvalueerd voor tool-geassisteerde codegeneratie binnen game server management?} De resultaten tonen aan dat een dergelijke architectuur realiseerbaar is en effectief functioneert. Alle 33 evaluatieruns (elf Takaro-modules over drie Claude-modellen) werden succesvol afgerond: elke gegenereerde module werd gedeployed, geïnstalleerd en functioneel gevalideerd op de game server zonder handmatige tussenkomst. Het proof of concept is daarmee aangetoond.
 
-Concreet wordt verwacht dat codefragmenten die gegenereerd worden met MCP-ondersteuning minder fouten bevatten met betrekking tot API-aanwending, zoals het gebruik van incorrecte endpoints, ontbrekende parameters of een foutieve volgorde van API-operaties. Daarnaast wordt verwacht dat deze codefragmenten consistenter zijn opgebouwd en daardoor beter geschikt zijn om te worden opgeslagen en hergebruikt als modules binnen het platform. Daartegenover staat de hypothese dat het gebruik van MCP kan leiden tot een verhoogd tokengebruik en een hogere complexiteit in de initiële setup.
+De architectuur bestaat uit drie samenhangende lagen. De MCP-server abstraheert de Takaro REST API naar een beperkte, gevalideerde toolset van 36 tools verdeeld over 10 functionele categorieën. De codeeragent voert de moduleontwikkelworkflow uit via een iteratieve ReAct-lus, aangestuurd door een gestructureerde systeemprompt. Voor complexe modules met drie of meer onafhankelijke componenten delegeert een orchestratoragent deeltaken aan parallelle subagents, die elk in een geïsoleerd contextvenster opereren. De evaluatie wordt ondersteund door een gelaagd observability-systeem dat elke toolaanroep als hiërarchische trace vastlegt in Langfuse.
 
-Voor de evaluatie worden enerzijds bestaande modules veergeleken met de MCP gegenereerde modules deze dataset is redelijk klein, maar bevat de basisfunctionaliteiten vereist om de correctheid van de gegenereerde code te beooredelen.
-Aanvullend hierop zal de MCP-server technisch worden geëvalueerd aan de hand van objectieve criteria. De kwaliteit van de gegenereerde modules zal worden beoordeeld op basis van hun functionele correctheid en bruikbaarheid binnen het platform. De evaluatie gebeurt enerzijds door na te gaan of de gegenereerde code zonder verdere aanpassingen kan worden geïntegreerd als herbruikbare module, en anderzijds door het aantal iteraties dat nodig is om tot een correcte en functionele codeoplossing te komen. Deze metrieken bieden inzicht in zowel de effectiviteit van de codegeneratie als de efficiëntie van het gebruik van het beschikbare context window.
+\section{Herziening van de initiële hypothese}
 
+De initiële hypothese stelde dat goed gedefinieerde MCP-tooldefinities voldoende API-kennis aan de agent zouden verschaffen, zonder dat aanvullende documentatie expliciet in de prompt opgenomen moest worden. Deze veronderstelling bleek onjuist. De tooldefinities beschrijven de interface van een tool, namelijk naam, parameters en verwachte output, maar ze geven geen informatie over de semantische relaties tussen tools, de volgorde van API-operaties of de structuur van de Takaro module.json. Zonder expliciete API-documentatie als MCP-resource produceerde de agent consistent foutieve parameterschema's en incorrecte aanroepvolgorden.
 
-Op basis van deze metingen wordt verwacht te kunnen concluderen dat MCP een duidelijke meerwaarde biedt voor codegeneratie in een agent-assisted coding-context, ondanks een mogelijke toename in tokengebruik. Indien deze hypothese niet bevestigd wordt, biedt dit waardevolle inzichten in de beperkingen van MCP en de omstandigheden waarin het protocol minder geschikt is voor codegeneratie.
+De correcte hypothese is omgekeerd: MCP vermindert de nood aan expliciete documentatie niet, maar biedt een gestructureerd mechanisme om die documentatie efficiënt aan te bieden via promptcachingmechanismen. De nabijheid van 100\% cache-hit ratio in alle runs bevestigt dat deze benadering tokenkosten effectief beheersbaar houdt over herhaalde uitvoeringen.
 
-De doelgroep van dit onderzoek, met name IT-professionals die instaan voor de ontwikkeling en het onderhoud van het game server managementplatform, verkrijgt inzicht in hoe LLM’s op een gecontroleerde en herbruikbare manier kunnen worden ingezet voor codegeneratie. De proof of concept en de bijhorende conclusies bieden een concrete basis voor verdere uitbreiding van het platform met AI-ondersteunde ontwikkeltools. De bachelorproef levert hierdoor zowel een technisch artefact als onderbouwde aanbevelingen op, wat zorgt voor een duidelijke meerwaarde binnen de specifieke bedrijfscontext.
+\section{Antwoorden op de deelvragen}
 
+\paragraph{In welke mate vermindert MCP de nood aan expliciete API-context?}
+MCP vermindert de nood aan expliciete API-context niet, maar structureert de aanbieding ervan. De agent raadpleegt actief MCP-resources: modulesjablonen, API-documentatie en bekende fouten. Dit wordt bevestigd door de 140 aanroepen van \texttt{ReadMcpResourceTool} over 33 runs. Zonder deze resources faalt de agent bij de eerste push. MCP biedt hiervoor een standaardmechanisme dat promptcaching mogelijk maakt, waardoor de documentatie bij herhaald gebruik goedkoper wordt dan directe injectie in de systeemprompt.
 
+\paragraph{Welke uitdagingen ontstaan bij contextbeheer binnen complexe codeertaken?}
+Contextuitputting en het lost-in-the-middle-probleem zijn de voornaamste uitdagingen. Bij modules met veel componenten neemt de conversatiegeschiedenis snel toe door geaccumuleerde toolresultaten. Het lost-in-the-middle-effect versterkt dit: vroege instructies verliezen aan betrouwbaarheid naarmate de context groeit. De MiniGames-testcase illustreert dit scherp: Haiku vereiste negen correctiepogingen en 131 toolaanroepen, terwijl Opus en Sonnet dezelfde module in één poging oplosten via de orchestratorarchitectuur, die elk contextvenster beperkt tot één deeltaak.
+
+\paragraph{Welke beperkingen hebben codeeragents bij interactie met complexe API's?}
+De voornaamste beperking is de instabiliteit van toolselectie bij semantisch overlappende tools en de gevoeligheid voor beschrijvingskwaliteit. Bij Haiku leidden vage of onjuist geïnterpreteerde parameterschema's tot gemiddeld 1,82 toolfouten per run. Opus produceerde geen enkele toolfout, wat wijst op een sterker vermogen om parameterschema's correct te interpreteren. De complexiteit van de Takaro API vereist een expliciete abstractielaag om de agent te begeleiden.
+
+\paragraph{Welke rol spelen toolinterfaces en validatie?}
+JSON Schema-validatie aan serverzijde vormt de eerste verdedigingslinie: foutieve toolaanroepen worden geweigerd vóór enig neveneffect optreedt, en het model ontvangt een gestructureerd foutsignaal. De Zod-schema's vervullen daarin een dubbele rol: ze genereren zowel de JSON Schema-definities voor het model als de runtime-validatie bij aanroep. De \texttt{guardedModulePath}-functie beschermt tegen path traversal bij bestandssysteemoperaties. Samen beperken deze lagen de schade van hallucinerende toolaanroepen en maken ze herstel via de retry-lus mogelijk.
+
+\paragraph{Hoe beïnvloedt de transportlaagkeuze de deploymentflexibiliteit?}
+Streamable HTTP in stateful modus biedt de gewenste deploymentflexibiliteit: de server draait onafhankelijk als Docker-container, aanvaardt verbindingen van meerdere opeenvolgende agentprocessen en koppelt elke sessie via een \texttt{Mcp-Session-Id} aan de juiste Langfuse-trace. Stdio was ongeschikt omdat het de server aan één clientproces koppelt. Stateless modus was ongeschikt omdat het sessie-IDs uitschakelt, waarmee de koppeling tussen toolaanroepen en evaluatietraces verloren gaat.
+
+\paragraph{Hoe beïnvloedt contextisolatie via subagents de beheersbaarheid?}
+De orchestrator-worker architectuur is de meest impactvolle ontwerpkeuze voor complexe modules. Door elke componentimplementatie te delegeren aan een subagent met een geïsoleerd contextvenster worden contextpollutie en contextuitputting structureel vermeden. De MiniGames-testcase toont dit aan: Opus en Sonnet losten zeven onafhankelijke minigames op in één poging via de orchestrator, terwijl Haiku zonder deze structuur wellicht niet alle componenten correct zou hebben geïntegreerd.
+
+\paragraph{Welke rol speelt observability en tracing?}
+Structurele observability is onmisbaar voor de evaluatie van agentgedrag. Klassieke logging biedt geen causale keten tussen prompt, toolaanroepen en resultaat. Het Langfuse-tracingmodel maakt zowel per-run analyse als modeloverstijgende vergelijking mogelijk. De eval-hint-koppeling, waarbij de eval-runner de \texttt{langfuseSessionId} registreert vóór het starten van Claude, is de kritische schakel die de toolaanroepen van de MCP-server verbindt met de tokengebruiksdata van de Claude API.
+
+\section{Beperkingen en toekomstig onderzoek}
+
+Dit onderzoek kent een aantal erkende beperkingen. De evaluatie omvat 11 van de meer dan 70 beschikbare Takaro-modules, geselecteerd via purposive sampling. Hoewel de selectie alle componenttypes en een reeks complexiteitsniveaus dekt, is generaliseerbaarheid naar alle mogelijke modules niet aangetoond. De validatie is uitsluitend uitgevoerd op het Takaro-platform; overdraagbaarheid naar andere game server managementplatformen of andere domein-specifieke API's vereist bijgevolg aanvullend onderzoek.
+
+Het \texttt{/mcp} HTTP-endpoint implementeert geen authenticatie, wat de server beperkt tot lokale of Docker-geïsoleerde deployments. Voor productiegebruik is authenticatie een vereiste.
+
+Toekomstig onderzoek kan zich richten op vier richtingen. Ten eerste de overdraagbaarheid van de MCP-serverarchitectuur naar andere complexe API's: de ontwerpprincipes rond toolabstractie, resourcecaching en de orchestrator-worker structuur zijn platformonafhankelijk. Ten tweede de invloed van systeempromptontwerp op de correctheidsscore: de huidige prompt is iteratief ontwikkeld maar niet systematisch geoptimaliseerd. Ten derde de inzet van open-source modellen: de huidige evaluatie omvat enkel Claude-modellen, terwijl alternatieven zoals Qwen of Llama een vergelijkingsreferentie kunnen bieden voor kostenefficiëntie. Ten vierde de automatische detectie en herstel van terugkerende foutpatronen via de known-issues resource: de huidige implementatie persisteert fouten per prompt, maar een clustering- of embedding-gebaseerde aanpak zou kunnen generaliseren over structureel gelijkaardige fouten.
+
+\section{Slotbeschouwing}
+
+Dit onderzoek toont aan dat een MCP-gebaseerde codeeragent Takaro-modules autonoom kan ontwikkelen, deployen en valideren, en dat de juiste architecturale keuzes bepalend zijn voor de betrouwbaarheid en evalueerbaarheid van het systeem. De initiële hypothese dat tooldefinities impliciete API-documentatie kunnen vervangen, werd weerlegd. De praktijk toont dat expliciete documentatie als MCP-resource onmisbaar is, maar via promptcaching efficiënt schaalbaar is over herhaalde runs. Het verschil in zero-shot prestaties tussen Opus (100\%) en Haiku (73\%) illustreert dat de modelmaturiteit een doorslaggevende factor blijft naast het protocolontwerp. De MCP-server als abstractielaag verlaagt de drempel voor LLM-gebaseerde moduleontwikkeling op het Takaro-platform en biedt een reproduceerbaar evaluatiekader voor toekomstige uitbreidingen.

@@ -2,7 +2,7 @@
 
 Onderstaande tabel bevat definities van technische termen die in dit werk worden vermeld maar niet uitgebreid worden toegelicht in de hoofdtekst.
 \setlength{\tabcolsep}{3pt}
-\begin{longtable}{@{}p{0.28\textwidth}@{\hspace{0.04\textwidth}}p{0.65\textwidth}@{}}
+\begin{longtable}{p{0.28\textwidth} p{0.68\textwidth}}
 \toprule
 \textbf{Term} & \textbf{Definitie} \\
 \midrule
@@ -12,7 +12,7 @@ Onderstaande tabel bevat definities van technische termen die in dit werk worden
 \textbf{Term} & \textbf{Definitie} \\
 \midrule
 \endhead
-\bottomrule
+\midrule
 \endfoot
 \bottomrule
 \endlastfoot
@@ -29,36 +29,13 @@ AutoGPT &
     Een autonoom AI-agentsysteem gebaseerd op GPT-modellen dat complexe taken zelfstandig uitvoert via een opeenvolging van tool-aanroepen, zonder tussenkomst van de gebruiker bij elke stap. \\
 \midrule
 
-AWS Lambda &
-    Een serverless computing-dienst van Amazon Web Services waarmee code wordt uitgevoerd als reactie op events, zonder dat de ontwikkelaar servers hoeft te beheren of te provisioneren. \\
-\midrule
-
-base64 &
-    Een binair-naar-tekst coderingsschema dat willekeurige binaire gegevens omzet naar een reeks van 64 afdrukbare ASCII-tekens, zodat die gegevens veilig kunnen worden opgenomen in tekstgebaseerde protocollen zoals JSON of HTTP. \\
-\midrule
-
-beam search &
-    Een zoekstrategie voor het decoderen van taalmodeloutput waarbij een vaste breedte (\emph{beam}) van de meest waarschijnlijke gedeeltelijke sequenties gelijktijdig wordt bijgehouden en uitgebreid, in tegenstelling tot greedy decoding dat slechts één kandidaat behoudt. \\
-\midrule
-
 BERT \newline \small(Bidirectional Encoder Representations from Transformers) &
     Een bidirectioneel Transformer-taalmodel ontwikkeld door Google dat de volledige inputsequentie in beide richtingen verwerkt om rijke, contextgevoelige woordrepresentaties te produceren. BERT wordt gebruikt als basis voor een groot aantal downstream NLP-taken. \\
 \midrule
 
-BPE \newline \small(Byte Pair Encoding) &
-    Een subword-tokenisatiealgoritme dat iteratief de meest frequente aangrenzende paren van symbolen samenvoegt totdat een gewenste vocabulariumgrootte is bereikt. BPE vormt de basis van de tokenisers van GPT-2, GPT-3, GPT-4 en LLaMA. \\
-\midrule
-
-CDN \newline \small(Content Delivery Network) &
-    Een gedistribueerd netwerk van servers, verspreid over meerdere geografische locaties, dat inhoud aan eindgebruikers levert vanuit de dichtstbijzijnde locatie om latency te verlagen en beschikbaarheid te verhogen. \\
-\midrule
 
 chain-of-thought prompting &
     Een promptingtechniek waarbij het taalmodel wordt geïnstrueerd om tussentijdse redeneerstappen te genereren vóór het uiteindelijke antwoord, wat de prestaties op meerstaps-redenerings- en rekentaken aanzienlijk verbetert. \\
-\midrule
-
-circuit breaker &
-    Een softwarepatroon voor fouttolerantie dat verdere aanroepen naar een component tijdelijk blokkeert wanneer het foutenpercentage een drempelwaarde overschrijdt, om te voorkomen dat een falende dienst cascade-fouten veroorzaakt in de rest van het systeem. \\
 \midrule
 
 Cloudflare Workers &
@@ -89,36 +66,8 @@ function calling &
     Een mechanisme waarbij een taalmodel, op basis van beschikbare tool-definities, gestructureerde aanroepen genereert naar externe functies als onderdeel van zijn output. Het model voert de functie zelf niet uit; de applicatielaag verwerkt de aanroep en geeft het resultaat terug aan het model. \\
 \midrule
 
-GeLU \newline \small(Gaussian Error Linear Unit) &
-    Een niet-lineaire activatiefunctie die in neurale netwerken wordt gebruikt en waarbij de activatie wordt gewogen door de cumulatieve verdeling van de standaard normaalverdeling, wat een vloeiende benadering geeft van de ReLU-functie. \\
-\midrule
-
-GloVe \newline \small(Global Vectors for Word Representation) &
-    Een methode voor het genereren van woordvectorrepresentaties op basis van globale co-occurrence-statistieken in een corpus. GloVe leert vectoren zodat hun inproduct de logaritme van de co-occurrencefrequentie van twee woorden benadert. \\
-\midrule
-
-Google Cloud Run &
-    Een volledig beheerd serverless platform van Google Cloud voor het uitvoeren van containergebaseerde applicaties, waarbij de infrastructuur automatisch wordt geschaald op basis van het inkomende verkeer. \\
-\midrule
-
-greedy decoding &
-    Een deterministisch decoderingsalgoritme waarbij bij elke generatiestap het token met de hoogste onmiddellijke waarschijnlijkheid wordt geselecteerd. Greedy decoding is snel maar leidt regelmatig tot repetitieve of globaal suboptimale output. \\
-\midrule
-
-GPU \newline \small(Graphics Processing Unit) &
-    Een gespecialiseerde processor die oorspronkelijk is ontworpen voor grafische berekeningen maar door zijn massief parallelle architectuur uitermate geschikt is voor de matrixbewerkingen die nodig zijn bij het trainen van grote neurale netwerken. \\
-\midrule
-
 hallucination &
     Het verschijnsel waarbij een taalmodel feitelijk onjuiste, niet-bestaande of semantisch incorrecte informatie genereert met schijnbare zekerheid. In de context van tool-aanroepen kan dit betekenen dat het model niet-bestaande tools aanroept of onjuiste parameterwaarden genereert. \\
-\midrule
-
-inference &
-    Het proces waarbij een getraind taalmodel een outputtokenreeks genereert gegeven een invoerprompt, zonder de modelparameters te wijzigen. Tokens worden auto-regressief gegenereerd totdat aan een stopcriterium is voldaan. \\
-\midrule
-
-ISO~8601 &
-    Een internationale standaard van de International Organization for Standardization voor de eenduidige tekstuele weergave van datum en tijd, bijvoorbeeld \texttt{2025-11-25T14:30:00Z}. \\
 \midrule
 
 JSON \newline \small(JavaScript Object Notation) &
@@ -149,10 +98,6 @@ lost-in-the-middle &
     Een fenomeen waarbij taalmodellen informatie die in het midden van een lange context staat minder betrouwbaar ophalen dan informatie aan het begin of einde. Dit beïnvloedt de kwaliteit van contextconstructie bij taken met lange invoersequenties. \\
 \midrule
 
-LSP \newline \small(Language Server Protocol) &
-    Een open protocol, ontwikkeld door Microsoft, dat de communicatie standaardiseert tussen code-editors en taalanalyseservices (language servers) voor functionaliteit zoals automatisch aanvullen, foutcontrole en definitie-opzoeken. \\
-\midrule
-
 MCP \newline \small(Model Context Protocol) &
     Een open protocol, geïntroduceerd door Anthropic in november 2024, dat de communicatie standaardiseert tussen AI-toepassingen en externe tools, data sources en services. MCP reduceert het M$\times$N-integratieprobleem tot M$+$N door een universele client-server interface te definiëren. \\
 \midrule
@@ -165,13 +110,7 @@ M$\times$N-probleem &
     Een combinatorisch integratieprobleem waarbij $M$ AI-toepassingen en $N$ externe tools zonder gedeeld protocol leiden tot $M \times N$ afzonderlijke, op maat gemaakte connector-implementaties. Het Model Context Protocol lost dit op door het integratieoppervlak terug te brengen tot $M + N$. \\
 \midrule
 
-MIME-type \newline \small(Multipurpose Internet Mail Extensions type) &
-    Een gestandaardiseerde identificator die het formaat en de aard van een bestand of datastream aangeeft, zoals \texttt{text/plain}, \texttt{application/json} of \texttt{image/png}. MIME-types worden onder meer gebruikt in HTTP-headers om het contenttype aan te geven. \\
-\midrule
 
-OAuth &
-    Een open standaard voor toegangsdelegatie waarmee een gebruiker een derde partij beperkte toegang kan verlenen tot zijn of haar resources op een server, zonder daarvoor het wachtwoord te hoeven delen. OAuth wordt breed ingezet voor het autoriseren van API-toegang. \\
-\midrule
 
 Plan-and-Execute &
     Een tweefasig agentpatroon waarbij een plannercomponent eerst een volledig meerstaps plan genereert op hoog niveau, waarna een executorcomponent elke stap sequentieel uitvoert. Dit scheidt strategisch redeneren van concrete tool-aanroepen. \\
@@ -189,17 +128,6 @@ ReAct \newline \small(Reasoning + Acting) &
     Een agentframework dat expliciete redenering (\emph{Thought}) interleeft met tool-aanroepen (\emph{Action}) en de teruggegeven observaties (\emph{Observe}) integreert vóór de volgende stap. Dit vermindert hallucination en error propagation in meerstaps-taken. \\
 \midrule
 
-residual connection \newline \small(skip-verbinding) &
-    Een architecturaal element in diepe neurale netwerken waarbij de invoer van een laag direct wordt opgeteld bij de uitvoer van die laag. Residual connections vergemakkelijken het trainen van zeer diepe netwerken door vanishing gradients te verminderen. \\
-\midrule
-
-RFC \newline \small(Request for Comments) &
-    Een publicatie van de Internet Engineering Task Force (IETF) die internetstandaarden, protocollen en best practices beschrijft en definieert. Bekende voorbeelden zijn RFC~3986 (URI-syntax), RFC~6570 (URI-templates) en RFC~5424 (syslog-protocol). \\
-\midrule
-
-reverse proxy &
-    Een tussenliggende server die verzoeken van clients ontvangt en doorstuurt naar een of meerdere backend-servers. Een reverse proxy wordt vaak ingezet voor load balancing, caching, SSL-terminatie en beveiliging. \\
-\midrule
 
 RoPE \newline \small(Rotary Positional Embedding) &
     Een methode voor het coderen van positionele informatie in Transformer-modellen waarbij query- en key-vectoren worden geroteerd in de attention-berekening zodat het inproduct enkel afhankelijk is van de relatieve afstand tussen twee posities, in plaats van hun absolute positie. \\
@@ -211,10 +139,6 @@ sampling \newline \small(MCP-primitief) &
 
 self-attention &
     Het kernmechanisme van de Transformer-architectuur waarbij elke positie in een tokensequentie gewogen aandacht besteedt aan alle andere posities. De gewichten worden berekend uit de compatibiliteit tussen query- en key-vectoren, waardoor het model contextuele afhankelijkheden over de volledige sequentie kan modelleren. \\
-\midrule
-
-SentencePiece &
-    Een taalonafhankelijk subword-tokenisatieframework dat de invoer behandelt als een onbewerkte karakterstroom zonder taalspecifieke pre-tokenisatie. SentencePiece ondersteunt zowel BPE als unigramtokenisatie en is bijzonder geschikt voor meertalige modellen. \\
 \midrule
 
 sliding window attention &
@@ -233,17 +157,11 @@ structured output &
     De capaciteit van een taalmodel om output te genereren die voldoet aan een vooraf gespecificeerde gegevensstructuur, zoals een JSON Schema. Structured outputs maken betrouwbare programmatische verwerking van modelresponsen mogelijk zonder fragiele tekstparsing. \\
 \midrule
 
-subword-tokenisatie &
-    Een tokenisatieaanpak waarbij frequente woorden als één token worden gerepresenteerd en zeldzame of morfologisch complexe woorden worden opgesplitst in kleinere, herbruikbare eenheden. Dit balanceert vocabulariumgrootte, generalisatie naar zeldzame woorden en sequentielengte. \\
-\midrule
 
 SWE-bench &
     Een benchmarksuite voor de evaluatie van AI-softwareontwikkelingsagents op het oplossen van echte, gerapporteerde softwareissues uit open-source GitHub-repositories. SWE-bench Pro is een strengere variant die benchmarkcontaminatie vermindert door uitsluitend issues te gebruiken die na de trainingsknipdatum van de modellen zijn aangemaakt. \\
 \midrule
 
-SwiGLU \newline \small(Swish-Gated Linear Unit) &
-    Een activatiefunctie die wordt gebruikt in de feed-forward lagen van moderne Transformer-modellen. SwiGLU combineert een Swish-geactiveerde gate met een lineaire projectie, wat empirisch betere prestaties oplevert dan standaard ReLU of GeLU in grootschalige taalmodellen. \\
-\midrule
 
 temperature &
     Een parameter die de scherpte van de kansverdeling over tokens bij de generatie van een taalmodel regelt. Een lage temperatuur maakt de output deterministischer en coherenter; een hoge temperatuur vergroot diversiteit en creativiteit ten koste van coherentie. \\
@@ -287,18 +205,6 @@ URI \newline \small(Uniform Resource Identifier) &
 
 vector store \newline \small(vector database) &
     Een gespecialiseerde database voor het opslaan en doorzoeken van dense vectorrepresentaties (embeddings). Bij retrieval-augmented generation worden relevante documenten opgehaald via semantisch zoeken op basis van de cosinusafstand of het inproduct tussen vectoren. \\
-\midrule
-
-Word2Vec &
-    Een groep neurale netwerkmodellen, geïntroduceerd door Mikolov et al.\ (2013), voor het genereren van dichte woordvectorrepresentaties. Word2Vec leert vectoren zodat woorden met gelijkaardige contexten dicht bij elkaar liggen in de embeddingruimte, wat rekenkundige bewerkingen op semantische relaties mogelijk maakt. \\
-\midrule
-
-WordPiece &
-    Een subword-tokenisatiealgoritme dat de log-likelihood van het corpus maximaliseert in plaats van de ruwe frequentie van symboolparen. WordPiece wordt toegepast in BERT en Googles vertaalsystemen en is nauw verwant aan Byte Pair Encoding. \\
-\midrule
-
-YaRN \newline \small(Yet another RoPE extensioN) &
-    Een techniek die de effectieve contextvensterlengte van een large language model uitbreidt door de basisfrequentie van de Rotary Positional Embeddings (RoPE) aan te passen tijdens fijnafstemming, zonder het volledige model opnieuw te trainen. \\
 \midrule
 
 zero-shot prompting &
