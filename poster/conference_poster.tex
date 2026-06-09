@@ -8,6 +8,8 @@
 
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric}
+\usepackage{titlesec}
+\titleformat{\section}{\Large\titlefont\bfseries\color{title}}{}{0pt}{}
 
 % Info over de opleiding
 \course{Bachelorproef}
@@ -28,6 +30,38 @@
 
 %% Herdefinieer \@maketitle: headerinfo in 2 kolommen (links / rechts uitgelijnd)
 \makeatletter
+\renewenvironment{abstract}
+{%
+  \bigskip\bigskip
+  \begin{center}
+    {\Large\titlefont\abstractname}
+  \end{center}
+  \list{}{%
+    \setlength{\leftmargin}{2cm}
+    \setlength{\rightmargin}{\leftmargin}}%
+  \item\relax\normalfont\itshape
+}{%
+  \endlist
+  \medskip\noindent
+  \begin{minipage}[c]{0.75\textwidth}
+    \if\@specialisation\@empty\else
+      \medskip\normalfont\noindent Keuzerichting: \@specialisation\par
+    \fi
+    \if\@keywords\@empty\else
+      \medskip\normalfont\noindent Sleutelwoorden: \@keywords\par
+    \fi
+    \if\@projectrepo\@empty\else
+      \medskip\normalfont\noindent Broncode: \url{\@projectrepo}\par
+    \fi
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[c]{0.2\textwidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{gh_qr}
+  \end{minipage}
+  \bigskip
+}
+
 \renewcommand{\@maketitle}{%
   \begingroup
   \raggedright\titlefont\color{title}\Large
@@ -76,26 +110,89 @@
 \begin{document}
 
 \maketitle
-
+ 
 \begin{abstract}
-Takaro.io vereist diepgaande platformkennis voor moduleontwikkeling. Deze bachelorproef
-onderzoekt of een MCP-gebaseerde coding agent het volledige ontwikkelproces — scaffolding,
-deployment en validatie — autonoom kan uitvoeren. Alle 33 evaluatieruns slaagden zonder
-handmatige tussenkomst. Architecturale keuzes, niet modelgrootte, bepalen de betrouwbaarheid.
+Takaro.io biedt meer dan honderd REST API-endpoints voor game server management, maar vereist
+diepgaande platformkennis die de drempel voor moduleontwikkeling sterk verhoogt.
+Via een design science research-aanpak werd een MCP-server gebouwd die de Takaro API abstraheert
+naar een beperkte toolset, aangevuld met een orchestrator-worker codeeragent die scaffolding,
+deployment en validatie autonoom uitvoert via een Gather--Act--Verify-lus.
+Elke evaluatierun werd instrumenteel gevolgd via Langfuse, waardoor architecturale keuzes
+empirisch vergelijkbaar werden over meerdere modellen en moduletypen.
+De resultaten tonen aan dat niet modelgrootte, maar toolabstractie, expliciete API-documentatie
+als MCP-resource en contextisolatie via subagents de betrouwbaarheid bepalen.
 \end{abstract}
 
-\begin{multicols}{3}
+\newlength{\postercolheight}
+\setlength{\postercolheight}{\dimexpr\textheight-\pagetotal-8cm\relax}
 
-%-- KOLOM 1: Introductie · Agentic Loop · Inner Dev Loop ----------------------
+\noindent
+\begin{minipage}[t][\postercolheight][s]{0.305\textwidth}
+
+%-- KOLOM 1: Introductie · Initiële Hypothese · Agentic Loop · Inner Dev Loop -
 
 \section{Introductie}
-
+\vspace{1cm}
 Takaro.io biedt meer dan honderd REST API-endpoints voor game server management, maar vereist
 diepgaande platformkennis om bruikbare modules te schrijven. Een MCP-server met \textbf{36 tools}
 laat een Claude-agent toe dit proces volledig autonoom uit te voeren.
 
 \textbf{Onderzoeksvraag:} Hoe kan een MCP-gebaseerde multi-agentarchitectuur worden ontworpen
 en geëvalueerd voor tool-geassisteerde codegeneratie binnen game server management?
+
+\vfill
+
+\section{Initiële Hypothese}
+
+\noindent\fcolorbox{red!60!black}{red!5}{%
+  \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+    \medskip
+    \normalsize\textbf{\textcolor{red!70!black}{$\times$\ Weerlegde aanname}}\\[4pt]
+    \small Goed gedefinieerde MCP-tooldefinities bieden de agent
+    \textbf{voldoende API-kennis}, extra documentatie is overbodig.
+    \medskip
+  }%
+}
+
+\begin{center}
+\begin{tikzpicture}
+  \def\r{5.8}
+  \def\xoff{3.2}
+
+  \fill[hogent-blue!20] (-\xoff,0) circle (\r);
+  \fill[red!12]         ( \xoff,0) circle (\r);
+  \begin{scope}
+    \clip (-\xoff,0) circle (\r);
+    \fill[hogent-blue!35] (\xoff,0) circle (\r);
+  \end{scope}
+  \draw[thick, hogent-blue]  (-\xoff,0) circle (\r);
+  \draw[thick, red!60!black] ( \xoff,0) circle (\r);
+
+  \node[font=\small\bfseries, text=hogent-blue, align=center]
+    at (-\xoff, \r+1.0) {Tooldefinitie\\biedt};
+  \node[font=\small\bfseries, text=red!70!black, align=center]
+    at ( \xoff, \r+1.0) {Agent heeft\\nodig};
+
+  \node[font=\small, align=center] at (0,  1.4) {\textcolor{black!70}{naam}};
+  \node[font=\small, align=center] at (0,  0.0) {\textcolor{black!70}{parameters}};
+  \node[font=\small, align=center] at (0, -1.4) {\textcolor{black!70}{output}};
+
+  \node[font=\small, text=red!70!black, align=center]
+    at (\xoff+1.3,  2.0) {semantische\\relaties};
+  \node[font=\small, text=red!70!black, align=center]
+    at (\xoff+1.3,  0.0) {aanroep-\\volgorde};
+  \node[font=\small, text=red!70!black, align=center]
+    at (\xoff+1.3, -2.2) {module.json\\structuur};
+
+  \node[font=\scriptsize\itshape, text=red!60!black]
+    at (\xoff+1.3, -4.2) {niet in tooldefinitie};
+\end{tikzpicture}
+\end{center}
+
+\noindent\small\textit{Zonder expliciete API-documentatie: foutieve parameterschema's
+en incorrecte aanroepvolgorden.}
+
+\vfill
 
 \section{Agentic Loop}
 
@@ -124,13 +221,15 @@ en geëvalueerd voor tool-geassisteerde codegeneratie binnen game server managem
   \draw[arr] (gc) -- (act);
   \draw[arr] (act) -- (ver);
   \draw[arr, bend right=40] (ver) to
-    node[below, font=\small, text=gray] {fix needed (max 3×)} (gc);
+    node[below, yshift=-0.7cm, font=\small, text=gray] {fix needed (max 3×)} (gc);
   \draw[arr, <->] (act) -- (mcp);
   \draw[arr, <->, bend left=15] (gc) to (mcp);
   \draw[arr, <->, bend right=15] (ver) to (mcp);
 \end{tikzpicture}
 \captionof{figure}{Cyclische Gather–Act–Verify lus via de MCP-server.}
 \end{center}
+
+\vfill
 
 \section{Inner Dev Loop}
 
@@ -164,18 +263,20 @@ en geëvalueerd voor tool-geassisteerde codegeneratie binnen game server managem
   \draw[arr] (tr) -- (ok);
 
   \draw[arr, bend right=55, draw=red!60]
-    (ok) to node[below, font=\scriptsize, text=red!70]
+    (ok) to node[below, yshift=-0.6cm, font=\scriptsize, text=red!70]
     {fail → get\_failed\_events → fix} (wr);
 \end{tikzpicture}
 \captionof{figure}{Van scaffolding tot validatie op de live game server.}
 \end{center}
 
-\columnbreak
+\end{minipage}%
+\hfill
+\begin{minipage}[t][\postercolheight][s]{0.305\textwidth}
 
-%-- KOLOM 2: Orchestratorarchitectuur · Methodologie -------------------------
+%-- KOLOM 2: Orchestratorarchitectuur · Methodologie · Resultaten -------------
 
 \section{Orchestratorarchitectuur}
-
+\vspace{1cm}
 Bij $\geq$3 componenten spawnt de orchestrator parallelle subagents in geïsoleerde contextvensters.
 
 \begin{center}
@@ -232,11 +333,32 @@ Bij $\geq$3 componenten spawnt de orchestrator parallelle subagents in geïsolee
   \draw[arr] (direct) |- (mrg);
 
 \end{tikzpicture}
-\captionof{figure}{Subagents werken parallel; orchestrator samenvoegt de JSON-fragmenten.}
+\captionof{figure}{Subagents werken parallel. De orchestrator voegt de JSON-fragmenten samen toe.}
 \end{center}
 
-\section{Methodologie}
+\vspace{3cm}
+\section{Resultaten}
 
+\begin{center}
+  \captionsetup{type=figure}
+  \includegraphics[width=1.0\linewidth]{fig_succes_zeroshot}
+  \captionof{figure}{Totaal en zero-shot succes per model (van 11 modules).}
+\end{center}
+
+\begin{center}
+  \captionsetup{type=figure}
+  \includegraphics[width=1.0\linewidth]{fig_shots_heatmap}
+  \captionof{figure}{Correctiepogingen per module en model (1\,=\,zero-shot).}
+\end{center}
+
+\end{minipage}%
+\hfill
+\begin{minipage}[t][\postercolheight][s]{0.305\textwidth}
+
+%-- KOLOM 3: Conclusies · Toekomstig onderzoek --------------------------------
+
+\section{Methodologie}
+\vspace{1cm}
 \begin{center}
 \renewcommand{\arraystretch}{1.4}
 \begin{tabular}{cccc}
@@ -253,52 +375,46 @@ Bij $\geq$3 componenten spawnt de orchestrator parallelle subagents in geïsolee
 \textbf{Aanpak:} Design science research\\[4pt]
 \textbf{Observability:} Langfuse · fasetagging · promptcaching
 \end{center}
-
-\columnbreak
-
-%-- KOLOM 3: Resultaten · Conclusies · Toekomstig onderzoek ------------------
-
-\section{Resultaten}
-
-\begin{center}
-  \captionsetup{type=figure}
-  \includegraphics[width=1.0\linewidth]{fig_succes_zeroshot}
-  \captionof{figure}{Totaal en zero-shot succes per model (van 11 modules).}
-\end{center}
-
-\begin{center}
-  \captionsetup{type=figure}
-  \includegraphics[width=1.0\linewidth]{fig_shots_heatmap}
-  \captionof{figure}{Correctiepogingen per module en model (1\,=\,zero-shot).}
-\end{center}
+\vspace{1cm}
 
 \section{Conclusies}
 
+\noindent\fcolorbox{hogent-darkgreen}{hogent-darkgreen!10}{%
+  \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+    \medskip
+    \normalsize\textbf{\textcolor{hogent-darkgreen}{$\checkmark$\ Gecorrigeerd inzicht}}\\[4pt]
+    \small MCP \textbf{vervangt} documentatie niet,
+    het structureert de aanbieding ervan efficiënt via promptcaching.
+    \medskip
+  }%
+}
+
 \begin{center}
-\small
-\begin{tabular}{lrrr}
-  \toprule
-  & \textbf{Opus} & \textbf{Sonnet} & \textbf{Haiku} \\
-  \midrule
-  Zero-shot      & 11/11    & 7/11     & 4/11   \\
-  Toolfouten/run & 0        & 0{,}09   & 1{,}82 \\
-  Kostprijs/run  & \$1{,}36 & \$1{,}12 & \$0{,}42 \\
-  \bottomrule
-\end{tabular}
+\begin{tikzpicture}
+  \fill[hogent-blue!20, rounded corners=5pt] (0,0) rectangle (0.9\linewidth,1.6);
+  \fill[hogent-blue,    rounded corners=5pt] (0,0) rectangle (0.891\linewidth,1.6);
+  \node[font=\normalsize\bfseries, text=white] at (0.45\linewidth,0.8)
+    {$\approx$100\,\% cache-hit ratio};
+  \node[font=\small, below=0.5cm] at (0.45\linewidth,0)
+    {over alle 33 evaluatieruns};
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+  \captionsetup{type=figure}
+  \includegraphics[width=\linewidth]{fig_errors}
+  \captionof{figure}{Gemiddeld aantal toolfouten per run.}
 \end{center}
 
 \begin{itemize}
-  \item \textbf{Tooldefinities $\neq$ documentatie:} semantische relaties vereisen
-        expliciete API-documentatie als MCP-resource
-  \item \textbf{Promptcaching:} cache-hit $\approx$100\,\% bij alle modellen
   \item \textbf{Orchestrator-worker:} contextisolatie vermijdt contextpollutie
-        (MiniGames: Haiku 9 pogingen vs.\ Opus 1)
   \item \textbf{Architectuur $>$ model:} toolset-ontwerp en contextisolatie zijn
         bepalender dan modelkeuze
 \end{itemize}
+\vspace{3cm}
 
 \section{Toekomstig onderzoek}
-
+\vspace{1cm}
 \begin{itemize}
   \item Overdraagbaarheid naar andere complexe API's
   \item Optimalisatie van het systeempromptontwerp
@@ -306,5 +422,6 @@ Bij $\geq$3 componenten spawnt de orchestrator parallelle subagents in geïsolee
   \item Embedding-gebaseerde clustering van foutpatronen
 \end{itemize}
 
-\end{multicols}
+\end{minipage}
+
 \end{document}
