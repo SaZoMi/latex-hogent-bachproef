@@ -169,7 +169,7 @@ De validatieset bestaat uit \textbf{25 testcases} uit twee bronnen:
     \item \textbf{5 issue-gestuurde builds} — open GitHub-issues uit de \texttt{gettakaro/ai-module-writer}-repository met beschrijvingen van te bouwen modules. De agent kreeg de issuetekst en de opdracht een werkende module te produceren.
 \end{itemize}
 
-Cases werden geselecteerd via \textbf{purposive sampling} om dekking te garanderen van alle belangrijke modulecomponenttypes (commands, hooks, cronjobs, functies) en een reeks complexiteitsniveaus. Uitputtend testen van alle beschikbare modules valt buiten de scope van een proof-of-concept-evaluatie; consistente successen over representatieve cases zijn voldoende om haalbaarheid aan te tonen.
+Cases werden geselecteerd via \textbf{purposive sampling} om dekking te garanderen van alle belangrijke modulecomponenttypes (commands, hooks, cronjobs, functies) en een reeks complexiteitsniveaus. Uitputtend testen van alle beschikbare modules valt buiten de scope van een proof-of-concept-evaluatie, consistente successen over representatieve cases zijn voldoende om haalbaarheid aan te tonen.
 
 \subsection{Succescriteria}\label{subsec:succescriteria}
 
@@ -312,7 +312,7 @@ De volgende beperkingen van deze methodologie worden erkend:
 \begin{enumerate}
     \item \textbf{Purposive sample} — 25 van 70 beschikbare modules werden getest. Hoewel de sample alle belangrijke moduletypen en complexiteitsniveaus dekt, biedt dit geen garantie voor niet-geteste modules.
     \item \textbf{Enkelvoudig platform} — de validatie werd uitsluitend uitgevoerd op het Takaro-platform. Generaliseerbaarheid naar andere game server managementplatformen is niet bewezen.
-    \item \textbf{Geen endpointauthenticatie} — het \texttt{/mcp} HTTP-endpoint implementeert geen authenticatie. De server is bedoeld voor lokale of Docker-geïsoleerde deployment; gebruik in een blootgestelde netwerkomgeving valt buiten de gevalideerde scope.
+    \item \textbf{Geen endpointauthenticatie} — het \texttt{/mcp} HTTP-endpoint implementeert geen authenticatie. De server is bedoeld voor lokale of Docker-geïsoleerde deployment, gebruik in een blootgestelde netwerkomgeving valt buiten de gevalideerde scope.
     \item \textbf{Onvolledige modelcoverage} — op het moment van schrijven zijn niet alle modelcomparisontests voltooid. Secties gemarkeerd als [resultaten TBD] worden ingevuld voor de finale indiening.
     \item \textbf{Onderzoeker als evaluator} — de MCP-server werd ontworpen en gebouwd door dezelfde onderzoeker die de validatie uitvoerde. Er was geen onafhankelijke evaluator, wat potentiële bevestigingsbias introduceert bij de interpretatie van randgevallen.
 \end{enumerate}
